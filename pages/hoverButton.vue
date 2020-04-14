@@ -82,7 +82,6 @@ export default {
 
 <style lang="css">
 #hover-button{
-  background: black;
   min-height: 200vh;
   padding: 0px;
 }
@@ -99,8 +98,8 @@ export default {
   width: 40vw;
   height: 40vw;
   margin: 0.5vw;
-  border: 3px dashed white;
-  background: rgba(255, 255, 255, 0.1);
+  border: 3px dashed blue;
+  background: rgba(0, 0, 255, 0.1);
   border-radius: 20px;
   position: relative;
   opacity: 1;
@@ -126,6 +125,7 @@ export default {
   cursor: pointer;
   text-transform: uppercase;
   font-size: 1.2vw;
+  margin: 0px;
 }
 
 #hover-button .item .circle:active {

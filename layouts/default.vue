@@ -1,6 +1,7 @@
 <template>
   <div v-window>
     <nuxt />
+    <p class="credentials">© seancode 2020</p>
   </div>
 </template>
 <script>
@@ -36,5 +37,14 @@ a{
   background: blue;
   border-radius: .5vw;
   display: inline-block;
+}
+
+.credentials{
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  text-align: center;
+  padding: 20px;
 }
 </style>
