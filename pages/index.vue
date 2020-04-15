@@ -44,7 +44,8 @@ export default {
       return {
         x: this.rand(-9,9),
         y: this.rand(-4,9),
-        rotate: this.rand(-5,5)
+        rotate: this.rand(-5,5),
+        mobile: true
       };
     },
     rand(min, max){
