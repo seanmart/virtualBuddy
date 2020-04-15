@@ -78,17 +78,6 @@ export default class extends Core{
     if (section.inView) this.transform(section.el,0,-this.scroll.top)
   }
 
-  checkElement(element){
-    super.checkElement(element)
-    if (element.inView){
-      if (element.x) element.transform.x = (element.scrolled * -element.x) / 10;
-      if (element.y) element.transform.y = (element.scrolled * -element.y) / 10;
-
-      this.transform(element.el, element.transform.x, element.transform.y);
-    }
-  }
-
-
 
   // HANDLE //////////////////////////////////////////////////////////////////////////////////////
 

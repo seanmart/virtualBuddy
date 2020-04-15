@@ -1,7 +1,17 @@
 <template>
   <div v-window>
+    <header>
+      <nuxt-link to="/" class="logo">Virtual Buddy</nuxt-link>
+      <nav>
+        <nuxt-link to="follower">follower</nuxt-link>
+      </nav>
+    </header>
+
     <nuxt />
-    <p class="credentials">© seancode 2020</p>
+
+    <footer>
+      <p>© seancode 2020</p>
+    </footer>
   </div>
 </template>
 <script>
@@ -19,6 +29,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  font-size: 15px;
+  color: black;
 }
 
 *,
@@ -28,23 +40,54 @@ html {
   margin: 0;
 }
 
-a{
-  font-size: 3vw;
-  padding: 1vw 2vw;
-  margin: 1vw 0px;
-  color: white;
-  text-decoration: none;
-  background: blue;
-  border-radius: .5vw;
-  display: inline-block;
+.container{
+  padding: 150px 10vw;
 }
 
-.credentials{
+a{
+  text-decoration: none;
+  display: inline-block;
+  color: inherit;
+}
+
+header,
+footer{
   position: fixed;
+  z-index: 1;
   left: 0px;
-  bottom: 0px;
   right: 0px;
+  padding: 20px 10vw;
+}
+
+header{
+  top: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+header .logo{
+  flex: 0 0 auto;
+  font-size: 35px;
+  font-weight: 700;
+}
+
+footer{
+  flex: 0 0 auto;
+  bottom: 0px;
   text-align: center;
-  padding: 20px;
+}
+
+nav{
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+}
+
+nav a{
+  padding: 10px 20px;
+  border: 1px solid blue;
+  color: blue;
+  border-radius: 5px;
 }
 </style>

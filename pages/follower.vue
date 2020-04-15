@@ -1,16 +1,14 @@
 <template lang="html">
-  <div id="hover-button" v-page>
-    <div class="section" v-section>
-      <div
-        class="item"
-        v-element="{onMouseEnter, onMouseOver,onMouseLeave}"
-        ref="container"
+  <div id="follower" class="container" v-page v-section>
+    <div
+      class="circle-container"
+      v-element="{onMouseEnter, onMouseOver,onMouseLeave}"
+      ref="container"
       >
-        <div class="circle-container" ref="circle">
-          <nuxt-link to="/">
-            click me
-          </nuxt-link>
-        </div>
+      <div class="circle" ref="circle">
+        <nuxt-link to="/">
+          click me
+        </nuxt-link>
       </div>
     </div>
   </div>
@@ -81,23 +79,14 @@ export default {
 </script>
 
 <style lang="css">
-#hover-button{
-  min-height: 200vh;
-  padding: 0px;
-}
-#hover-button .section {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
+#follower{
+  height: 210vh;
 }
 
-#hover-button .item {
-  flex: 0 0 auto;
+#follower .circle-container {
   width: 40vw;
-  height: 40vw;
-  margin: 0.5vw;
+  height: 100vh;
+  margin: auto;
   border: 3px dashed blue;
   background: rgba(0, 0, 255, 0.1);
   border-radius: 20px;
@@ -108,32 +97,23 @@ export default {
   align-items: center;
 }
 
-#hover-button .item .circle-container {
-  width: 10vw;
-  height: 10vw;
+#follower .circle {
+  width: 150px;
+  height: 150px;
 }
 
-#hover-button .item a {
-  display: block;
+#follower a {
   height: 100%;
   width: 100%;
-  border-radius: 50%;
+  text-transform: uppercase;
+  font-size: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: 0.25s;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-size: 1.2vw;
-  margin: 0px;
+  background: blue;
+  color: white;
+  border-radius: 50%;
+  border: 1px solid black;
 }
 
-#hover-button .item .circle:active {
-  transform: scale(1.05);
-}
-
-#hover-button .item.hover .circle {
-  transform: scale(1);
-  opacity: 1;
-}
 </style>

@@ -131,7 +131,7 @@ export default class {
   // CHECK //////////////////////////////////////////////////////////////////////////////////////
 
   checkSection(section){
-    let padding = this.windowheight / 2
+    let padding = this.windowheight
     let inView = section.top - padding <= this.scroll.bottom && section.bottom + padding >= this.scroll.top;
     let visible = section.top <= this.scroll.bottom && section.bottom >= this.scroll.top;
 
@@ -162,10 +162,10 @@ export default class {
     }
   }
 
-  checkElement(element){
+  checkElement(element, fn){
     let padding = this.windowheight / 4
-    let inView = element.top - padding <= this.scroll.bottom && element.bottom + padding >= this.scroll.top;
-    let visible = element.top <= this.scroll.bottom && element.bottom >= this.scroll.top;
+    let inView = element.computed.top - padding <= this.scroll.bottom && element.computed.bottom + padding >= this.scroll.top;
+    let visible = element.computed.top <= this.scroll.bottom && element.computed.bottom >= this.scroll.top;
 
     if (inView || element.inView){
 
@@ -180,14 +180,22 @@ export default class {
 
       if (element.onMouseOver || element.onMouseEnter || element.onMouseLeave) this.handleElementMouseOver(element)
 
+      element.inView = inView;
+      element.visible = visible;
+
+      if (this.smooth || element.mobile){
+        if (element.x) element.transform.x = (scrolled * -element.x) / 10;
+        if (element.y) element.transform.y = (scrolled * -element.y) / 10;
+        if (element.rotate) element.transform.rotate = scrolled * element.rotate / 100
+
+        this.transform(element.el, element.transform.x, element.transform.y, element.transform.rotate);
+      }
+
       element.computed.top = element.top + element.transform.y;
       element.computed.bottom = element.bottom + element.transform.y;
       element.computed.left = element.left + element.transform.x;
       element.computed.right = element.right + element.transform.x;
 
-      element.inView = inView;
-      element.visible = visible;
-      element.scrolled = scrolled
     }
   }
 
@@ -316,11 +324,15 @@ export default class {
 
   // TRANSFORM //////////////////////////////////////////////////////////////////////////////////////
 
-  transform(el, x = 0, y = 0) {
-    let transform = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1) `;
+  transform(el, x = 0, y = 0, r = 0) {
+    let transform = ""
+    if (x || y) transform = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1) `;
+    if (r) transform += `rotate3d(0,0,1,${r}deg)`
+
     el.style.webkitTransform = transform;
     el.style.msTransform = transform;
     el.style.transform = transform;
   }
+
 
 }
