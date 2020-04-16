@@ -1,7 +1,7 @@
 import VirtualBuddy from "@/assets/virtualBuddy";
 import Vue from "vue";
 
-let vb = new VirtualBuddy({ smooth: true });
+let vb = new VirtualBuddy();
 
 Vue.directive("window", {
   bind: function(el, binding) {

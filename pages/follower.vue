@@ -31,17 +31,20 @@ export default {
     this.getCircle()
   },
   methods: {
-    onMouseOver(mouse) {
+    onMouseOver(mouse, smooth) {
+      if (!smooth) return
       this.mouse.x = mouse.x - this.circle.left - (this.circle.width / 2)
       this.mouse.y = mouse.y - this.circle.top - (this.circle.height / 2)
 
       if (!this.ticking) this.handleAnimation()
 
     },
-    onMouseEnter(){
+    onMouseEnter(mouse, smooth){
+      if (!smooth) return
       this.lerpAmount = .2
     },
-    onMouseLeave() {
+    onMouseLeave(mouse, smooth) {
+      if (!smooth) return
       this.lerpAmount = .05
       this.mouse.x = 0
       this.mouse.y = 0
@@ -114,6 +117,12 @@ export default {
   color: white;
   border-radius: 50%;
   border: 1px solid black;
+}
+
+@media screen and (max-width: 600px){
+  #follower .circle-container{
+    width: 100%;
+  }
 }
 
 </style>

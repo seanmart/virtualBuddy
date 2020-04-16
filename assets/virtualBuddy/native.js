@@ -1,8 +1,12 @@
 import Core from './core'
+import {minMax, lerp} from './helpers'
 
 export default class extends Core{
   constructor(options){
     super(options)
+
+    this.isTicking = false
+
   }
 
   init(){
@@ -17,8 +21,17 @@ export default class extends Core{
     window.addEventListener('scroll', this.handleScroll)
   }
 
-  handleScroll(){
-    super.handleScroll(window.scrollY)
+  handleScroll(e){
+    if (!this.isTicking) this.checkScroll()
   }
 
+  checkScroll(){
+
+    this.isTicking = true
+
+    window.requestAnimationFrame(()=>{
+      this.updateScroll(window.scrollY)
+      this.isTicking = false
+    })
+  }
 }

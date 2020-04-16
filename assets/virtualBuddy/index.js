@@ -9,7 +9,7 @@ export default class {
     this.getTranslate = getTranslate
 
     let mobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    this.instance = mobile || options.smooth == false ? new Native(options) : new Smooth(options);
+    this.instance = mobile ? new Native({...options, smooth: false}) : new Smooth({...options,smooth: true});
   }
 
   addWindow(el, options) {

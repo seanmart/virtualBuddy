@@ -20,6 +20,7 @@ export default class {
     this.limit = 0;
 
     this.scroll = { top: 0, bottom: this.windowheight };
+    this.direction = 'down'
     this.mouse = { x: 0, y: 0 };
 
     this.init()
@@ -142,9 +143,9 @@ export default class {
       let scrolled = minMax(this.scroll - offset, 0, duration);
       let percent = minMax(scrolled / duration, 0, 1);
 
-      if (section.onEnter && visible && !section.visible) section.onEnter();
-      if (section.onScroll && (visible || section.visible)) section.onScroll({ scrolled, percent });
-      if (section.onLeave && !visible && section.visible) section.onLeave();
+      if (section.onEnter && visible && !section.visible) section.onEnter(this.direction, this.smooth);
+      if (section.onScroll && (visible || section.visible)) section.onScroll({ scrolled, percent },this.smooth);
+      if (section.onLeave && !visible && section.visible) section.onLeave(this.direction,this.smooth);
 
       if (inView && !section.inView) {
         section.el.style.opacity = "";
@@ -174,9 +175,9 @@ export default class {
       let scrolled = minMax(this.scroll.top - offset, 0, duration);
       let percent = minMax(scrolled / duration, 0, 1);
 
-      if (element.onEnter && visible && !section.visible) element.onEnter();
-      if (element.onScroll && (visible || section.visible)) element.onScroll({ scrolled, percent });
-      if (element.onLeave && !visible && section.visible) element.onLeave();
+      if (element.onEnter && visible && !section.visible) element.onEnter(this.direction,this.smooth);
+      if (element.onScroll && (visible || section.visible)) element.onScroll({ scrolled, percent },this.smooth);
+      if (element.onLeave && !visible && section.visible) element.onLeave(this.direction,this.smooth);
 
       if (element.onMouseOver || element.onMouseEnter || element.onMouseLeave) this.handleElementMouseOver(element)
 
@@ -209,7 +210,7 @@ export default class {
     })
 
     this.update();
-    this.handleScroll(this.scroll.top, true);
+    this.checkScroll(true);
   }
 
   handleMouseMove(e) {
@@ -228,20 +229,6 @@ export default class {
     })
   }
 
-  handleScroll(scroll) {
-    this.direction = scroll > this.scroll.top ? "down" : "up";
-    this.mouse.y += scroll - this.scroll.top;
-    this.scroll.top = scroll;
-    this.scroll.bottom = scroll + this.windowheight
-
-    Object.keys(this.events.scroll).forEach(key => {
-      this.events.scroll[key](e)
-    })
-
-    this.sections.forEach(s => this.checkSection(s))
-    this.elements.forEach(e => this.checkElement(e))
-  }
-
   handleElementMouseOver(el) {
     let computed = el.computed;
     let mouseover =
@@ -257,9 +244,9 @@ export default class {
       y: minMax(this.mouse.y - computed.top, 0, computedHeight)
     };
 
-    if (el.onMouseEnter && mouseover && !el.mouseover) el.onMouseEnter();
-    if (el.onMouseLeave && !mouseover && el.mouseover) el.onMouseLeave();
-    if (el.onMouseOver && mouseover) el.onMouseOver(computedMouse);
+    if (el.onMouseEnter && mouseover && !el.mouseover) el.onMouseEnter(this.mouse, this.smooth);
+    if (el.onMouseLeave && !mouseover && el.mouseover) el.onMouseLeave(this.mouse, this.smooth);
+    if (el.onMouseOver && mouseover) el.onMouseOver(computedMouse, this.smooth);
 
     el.mouseover = mouseover;
   }
@@ -271,6 +258,20 @@ export default class {
   update() {
     this.updateWindow();
     this.updateSectionsAndElements();
+  }
+
+  updateScroll(scroll) {
+    this.direction = scroll > this.scroll.top ? "down" : "up";
+    this.mouse.y += scroll - this.scroll.top;
+    this.scroll.top = scroll;
+    this.scroll.bottom = scroll + this.windowheight
+
+    Object.keys(this.events.scroll).forEach(key => {
+      this.events.scroll[key](e)
+    })
+
+    this.sections.forEach(s => this.checkSection(s))
+    this.elements.forEach(e => this.checkElement(e))
   }
 
   updateWindow() {

@@ -72,6 +72,10 @@ export default {
 
 <style lang="css">
 
+#home{
+  overflow: hidden;
+}
+
 #home .section {
   display: flex;
   flex-wrap: wrap;

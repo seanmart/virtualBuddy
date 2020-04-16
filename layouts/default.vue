@@ -90,4 +90,10 @@ nav a{
   color: blue;
   border-radius: 5px;
 }
+
+@media screen and (max-width: 600px){
+  header .logo{
+    font-size: 25px;
+  }
+}
 </style>

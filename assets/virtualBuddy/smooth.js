@@ -83,20 +83,23 @@ export default class extends Core{
 
   handleDelta(e){
     this.delta = minMax(this.delta - e.deltaY,0,this.limit)
-    if (!this.isScrolling && !this.isTouchingScrollbar) this.handleScroll(this.scroll.top)
+    if (!this.isScrolling && !this.isTouchingScrollbar) this.checkScroll()
   }
 
 
-  handleScroll(scroll,force = false){
+
+  // CHECK //////////////////////////////////////////////////////////////////////////////////////
+
+  checkScroll(force = false){
     this.isScrolling = Math.abs(this.delta - this.scroll.top) > .1
 
     if (this.isScrolling || force){
 
       window.requestAnimationFrame(()=>{
-        scroll = lerp(this.scroll.top, this.delta, this.inertia)
-        super.handleScroll(scroll)
+        let scroll = lerp(this.scroll.top, this.delta, this.inertia)
+        this.updateScroll(scroll)
         this.transformScrollbar()
-        this.handleScroll()
+        this.checkScroll()
       })
 
     }
@@ -151,7 +154,7 @@ export default class extends Core{
     if (this.isTouchingScrollbar){
       let difference = ((e.clientY - this.scrollbar.offset) / this.windowheight) * (this.limit + this.windowheight)
       this.delta = minMax(this.scrollbar.scroll + difference, 0, this.limit)
-      this.handleScroll()
+      this.checkScroll()
     }
   }
 
