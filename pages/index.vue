@@ -30,7 +30,7 @@ export default {
         for (let b = 1; b <= 40; b++){
           items.push({
             class: this.getClass(),
-            props: this.getProps()
+            props: this.getProps(b)
           })
         }
         sections.push(items)
@@ -40,7 +40,7 @@ export default {
     }
   },
   methods: {
-    getProps() {
+    getProps(index) {
       return {
         x: this.rand(-9,9),
         y: this.rand(-4,9),

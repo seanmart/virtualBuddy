@@ -10,9 +10,10 @@ export default class extends Core{
   }
 
   init(){
-    super.init()
-
+    this.handleOrientationChange = this.handleOrientationChange.bind(this);
     this.handleScroll = this.handleScroll.bind(this)
+
+    window.addEventListener("orientationchange", this.handleOrientationChange);
 
     this.addScroll()
   }
@@ -25,6 +26,10 @@ export default class extends Core{
     if (!this.isTicking) this.checkScroll()
   }
 
+  handleOrientationChange(){
+    this.handleResize()
+  }
+
   checkScroll(){
 
     this.isTicking = true
@@ -33,5 +38,11 @@ export default class extends Core{
       this.updateScroll(window.scrollY)
       this.isTicking = false
     })
+  }
+
+  updateWindow() {
+    this.windowheight = screen.availHeight;
+    this.windowwidth = window.innerWidth;
+    this.limit = this.el.offsetHeight - this.windowheight;
   }
 }

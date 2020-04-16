@@ -205,6 +205,7 @@ export default class {
   // HANDLE //////////////////////////////////////////////////////////////////////////////////////
 
   handleResize() {
+    if (!this.smooth) return
     Object.keys(this.events.resize).forEach(key => {
       this.events.resize[key]()
     })
