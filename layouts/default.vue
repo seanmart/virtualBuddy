@@ -4,13 +4,14 @@
       <nuxt-link to="/" class="logo">Virtual Buddy</nuxt-link>
       <nav>
         <nuxt-link to="follower">follower</nuxt-link>
+        <nuxt-link to="percent">percent</nuxt-link>
       </nav>
     </header>
 
     <nuxt />
 
     <footer>
-      <p>© seancode 2020</p>
+      <p>© seanmware 2020</p>
     </footer>
   </div>
 </template>
@@ -53,7 +54,7 @@ a{
 header,
 footer{
   position: fixed;
-  z-index: 1;
+  z-index: 10;
   left: 0px;
   right: 0px;
   padding: 20px 10vw;
@@ -89,6 +90,7 @@ nav a{
   border: 1px solid blue;
   color: blue;
   border-radius: 5px;
+  margin-left: 5px;
 }
 
 @media screen and (max-width: 600px){

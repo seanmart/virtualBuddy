@@ -5,7 +5,7 @@ export function lerp(start, end, amt){
 export function getValue(value,el){
 
   if (value == undefined || value == null) return undefined
-  if (is('number', value) || is('function', value)) return value
+  if (type('number', value) || type('function', value)) return value
 
   let parsedValue = parseFloat(value)
 
@@ -104,4 +104,45 @@ export function getLeft(el){
     el = el.offsetParent
   } while(el)
   return left
+}
+
+export function rotateRect(angle,height,width){
+
+    let a = (angle * Math.PI) / 180;
+    let xAx = Math.cos(a);  // x axis x
+    let xAy = Math.sin(a);
+    let w = width
+    let h = height
+    let x = 0
+    let y = 0
+    let ox = w / 2
+    let oy = h / 2
+    x -= ox;  // move rectangle onto origin
+    y -= oy;
+
+    let r = [[ // return array holding the resulting points
+            x * xAx - y * xAy + ox,   // Get the top left rotated position
+            x * xAy + y * xAx + oy,   // and move it back to the origin
+        ], [
+            (x + w) * xAx - y * xAy + ox,   // Get the top right rotated position
+            (x + w) * xAy + y * xAx + oy,
+        ], [
+            (x + w) * xAx - (y + h) * xAy + ox,   // Get the bottom right rotated position
+            (x + w) * xAy + (y + h) * xAx + oy,
+        ], [
+            x * xAx - (y + h) * xAy + ox,   // Get the bottom left rotated position
+            x * xAy + (y + h) * xAx + oy,
+        ]
+    ];
+
+    return{
+      left: Math.min(r[0][0], r[1][0], r[2][0], r[3][0]),
+      right: Math.max(r[0][0], r[1][0], r[2][0], r[3][0]) - w,
+      top: Math.min(r[0][1], r[1][1], r[2][1], r[3][1]),
+      bottom: Math.max(r[0][1], r[1][1], r[2][1], r[3][1]) - h
+    }
+
+
+
+
 }

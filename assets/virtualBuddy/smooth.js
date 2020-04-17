@@ -46,9 +46,9 @@ export default class extends Core{
   }
 
   initLoad(){
+    super.initLoad()
     this.delta = 0
     this.scrollbar.scroll = 0
-    super.initLoad()
     this.transformScrollbar()
   }
 

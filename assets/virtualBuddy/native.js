@@ -27,6 +27,7 @@ export default class extends Core{
   }
 
   handleOrientationChange(){
+    console.log('orentation change')
     this.handleResize()
   }
 

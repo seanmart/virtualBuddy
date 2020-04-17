@@ -45,7 +45,7 @@ export default {
     },
     onMouseLeave(mouse, smooth) {
       if (!smooth) return
-      this.lerpAmount = .05
+      this.lerpAmount = .025
       this.mouse.x = 0
       this.mouse.y = 0
       this.handleAnimation()
@@ -83,12 +83,14 @@ export default {
 
 <style lang="css">
 #follower{
-  height: 210vh;
+  height: 200vh
 }
 
 #follower .circle-container {
-  width: 40vw;
-  height: 100vh;
+  width: 600px;
+  height: 600px;
+  max-width: 100%;
+  max-height: 100%;
   margin: auto;
   border: 3px dashed blue;
   background: rgba(0, 0, 255, 0.1);
@@ -119,10 +121,5 @@ export default {
   border: 1px solid black;
 }
 
-@media screen and (max-width: 600px){
-  #follower .circle-container{
-    width: 100%;
-  }
-}
 
 </style>

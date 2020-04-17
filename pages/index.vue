@@ -19,7 +19,7 @@ export default {
   mounted(){
     let tl = gsap.timeline()
     tl.to(this.$refs.item,1,{opacity:1},0)
-    tl.from(this.$refs.item,1,{scale: 0,rotate: -20,stagger: .05},.2)
+    tl.from(this.$refs.item,.5,{scale: 0,rotate: -20,stagger: .03},.2)
   },
   computed:{
     sections(){
@@ -43,7 +43,7 @@ export default {
     getProps(index) {
       return {
         x: this.rand(-9,9),
-        y: this.rand(-4,9),
+        y: this.rand(-4,4),
         rotate: this.rand(-5,5),
         mobile: true
       };

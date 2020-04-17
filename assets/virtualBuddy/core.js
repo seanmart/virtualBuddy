@@ -1,4 +1,4 @@
-import { getTranslate, minMax, getValue } from "./helpers";
+import { getTranslate, minMax, getValue, rotateRect } from "./helpers";
 
 export default class {
   constructor(options) {
@@ -19,7 +19,7 @@ export default class {
     this.windowwidth = 0;
     this.limit = 0;
 
-    this.scroll = { top: 0, bottom: this.windowheight };
+    this.scroll = { top: 0, bottom: this.windowheight, diff: 0 };
     this.direction = 'down'
     this.mouse = { x: 0, y: 0 };
 
@@ -62,16 +62,23 @@ export default class {
   initElements() {
     this.elements.forEach(element => {
 
-      element.transform = { x: 0, y: 0 };
+      element.transform = { x: 0, y: 0, rotate: 0 };
       element.computed = { top: 0, left: 0, right: 0, bottom: 0 };
-      element.inView = false;
-      element.visible = false;
+
       element.scrolled = 0
+      element.visible = false;
+      element.inView = false
 
-      element.updates = [];
-      if (element.offset) element.updates.push(["offset", element.offset]);
-      if (element.duration) element.updates.push(["duration", element.duration]);
+      element.update = {};
+      if (element.offsetTop || element.offset) element.update.offsetTop = element.offsetTop || element.offset;
+      if (element.offsetBottom || element.offset) element.update.offsetBottom = element.offsetBottom || element.offset;
+      if (element.duration) element.update.duration = element.duration
 
+      element.offsetTop = 0
+      element.offsetBottom = 0
+      element.duration = 0
+
+      delete element.offset
 
       if (element.onMouseOver || element.onMouseEnter || element.onMouseLeave) {
         element.mouseover = false;
@@ -80,7 +87,6 @@ export default class {
         })
       }
 
-      this.updateElement(element);
     });
   }
 
@@ -139,9 +145,9 @@ export default class {
     if (inView || section.inView){
 
       let offset = Math.max(section.top - this.windowheight, 0);
-      let duration = section.bottom - offset;
-      let scrolled = minMax(this.scroll - offset, 0, duration);
-      let percent = minMax(scrolled / duration, 0, 1);
+      let limit = section.bottom - offset;
+      let scrolled = minMax(this.scroll - offset, 0, limit);
+      let percent = minMax(scrolled / limit, 0, 1);
 
       if (section.onEnter && visible && !section.visible) section.onEnter(this.direction, this.smooth);
       if (section.onScroll && (visible || section.visible)) section.onScroll({ scrolled, percent },this.smooth);
@@ -163,41 +169,45 @@ export default class {
     }
   }
 
-  checkElement(element, fn){
-    let padding = this.windowheight / 4
-    let inView = element.computed.top - padding <= this.scroll.bottom && element.computed.bottom + padding >= this.scroll.top;
-    let visible = element.computed.top <= this.scroll.bottom && element.computed.bottom >= this.scroll.top;
+  checkElement(element){
 
-    if (inView || element.inView){
+    let {computed, offsetTop, offsetBottom, inside, duration, inView} = element
+    let {top, bottom} = this.scroll
 
-      let offset = Math.max(element.top - this.windowheight, 0);
-      let duration = element.computed.bottom - offset;
-      let scrolled = minMax(this.scroll.top - offset, 0, duration);
-      let percent = minMax(scrolled / duration, 0, 1);
+    offsetTop += inside ? element.height : 0
+    offsetBottom += inside ? element.height : 0
 
-      if (element.onEnter && visible && !section.visible) element.onEnter(this.direction,this.smooth);
-      if (element.onScroll && (visible || section.visible)) element.onScroll({ scrolled, percent },this.smooth);
-      if (element.onLeave && !visible && section.visible) element.onLeave(this.direction,this.smooth);
+    let scrolltop = (duration || top) + offsetTop
+    let scrollbottom = (inView ? top + element.top : bottom) - offsetBottom
+    let visible = computed.top <= scrollbottom && computed.bottom >= scrolltop
+
+    if (visible || element.visible){
+
+      let limit = scrollbottom - scrolltop + element.height
+      let scrolled = visible ? scrollbottom - computed.top : this.direction == 'down' ? limit : 0
+      let percent = scrolled / limit
+
+      if (element.onEnter && visible && !element.visible) element.onEnter(this.direction,this.smooth);
+      if (element.onScroll && (visible || element.visible)) element.onScroll({ scrolled, percent },this.smooth);
+      if (element.onLeave && !visible && element.visible) element.onLeave(this.direction,this.smooth);
 
       if (element.onMouseOver || element.onMouseEnter || element.onMouseLeave) this.handleElementMouseOver(element)
 
-      element.inView = inView;
-      element.visible = visible;
-
       if (this.smooth || element.mobile){
-        if (element.x) element.transform.x = (scrolled * -element.x) / 10;
-        if (element.y) element.transform.y = (scrolled * -element.y) / 10;
-        if (element.rotate) element.transform.rotate = scrolled * element.rotate / 100
+
+        if (element.x) element.transform.x = scrolled * (-element.x / 10);
+        if (element.y) element.transform.y = scrolled * (-element.y / 10);
+        if (element.rotate) element.transform.rotate = scrolled * (element.rotate / 100)
 
         this.transform(element.el, element.transform.x, element.transform.y, element.transform.rotate);
       }
 
-      element.computed.top = element.top + element.transform.y;
-      element.computed.bottom = element.bottom + element.transform.y;
-      element.computed.left = element.left + element.transform.x;
-      element.computed.right = element.right + element.transform.x;
+      this.updateComputed(element)
 
+      element.visible = visible
     }
+
+
   }
 
 
@@ -263,6 +273,7 @@ export default class {
 
   updateScroll(scroll) {
     this.direction = scroll > this.scroll.top ? "down" : "up";
+    this.scroll.diff = scroll - this.scroll.top
     this.mouse.y += scroll - this.scroll.top;
     this.scroll.top = scroll;
     this.scroll.bottom = scroll + this.windowheight
@@ -298,28 +309,58 @@ export default class {
 
         let eb = el.getBoundingClientRect();
         let et = getTranslate(el) || {x:0,y:0}
+        let r = rotateRect(element.transform.rotate,element.el.offsetHeight,element.el.offsetWidth)
 
-        element.top = eb.top - et.y - st.y;
-        element.left = eb.left - et.x;
-        element.bottom = element.top + eb.height;
-        element.right = element.left + eb.width;
+        element.height = el.offsetHeight;
+        element.width = el.offsetWidth;
+        element.top = eb.top - et.y - st.y - r.top;
+        element.left = eb.left - et.x - r.left;
+        element.bottom = element.top + element.height
+        element.right = element.left + element.width
+        element.inView = element.top < this.windowheight
 
-        element.computed.top = element.top + element.transform.y;
-        element.computed.bottom = element.bottom + element.transform.y;
-        element.computed.left = element.left + element.transform.x;
-        element.computed.right = element.right + element.transform.x;
+        this.updateComputed(element)
 
-        this.updateElement(element);
+        if (Object.keys(element.update).length > 0) this.updateElement(element);
+
       });
     });
   }
 
+  updateComputed(element){
+    element.computed.top = element.top + element.transform.y;
+    element.computed.bottom = element.bottom + element.transform.y;
+    element.computed.left = element.left + element.transform.x;
+    element.computed.right = element.right + element.transform.x;
+
+    if (element.transform.rotate){
+
+      let r = rotateRect(element.transform.rotate,element.height,element.width)
+
+      element.computed.top -= r.top
+      element.computed.left -= r.left
+      element.computed.bottom += r.bottom
+      element.computed.right += r.right
+
+    }
+  }
+
   updateElement(element) {
-    element.updates.forEach(update => {
-      let key = update[0]
-      let value = update[1]
-      element[key] = getValue(value, element.el);
-    });
+
+      let {update} = element
+
+      if (update.offsetTop){
+        element.offsetTop = getValue(update.offsetTop,element.el)
+      }
+
+      if (update.offsetBottom){
+        element.offsetBottom = getValue(update.offsetBottom,element.el)
+      }
+
+      if (update.duration){
+        element.duration = getValue(update.duration, element.el)
+      }
+
   }
 
 
