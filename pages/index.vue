@@ -6,10 +6,11 @@
         class="item"
         v-for="(item,b) in section"
         :key="b"
-        v-element="item.props"
+        v-element="{...item.props, momentum}"
         :class="item.class"
         />
     </div>
+    <button type="button" @click="toggleMomentum">Use {{momentum ? 'Scroll' : 'Momentum'}}</button>
   </div>
 </template>
 
@@ -17,9 +18,13 @@
 import gsap from 'gsap'
 export default {
   mounted(){
-    let tl = gsap.timeline()
-    tl.to(this.$refs.item,1,{opacity:1},0)
-    tl.from(this.$refs.item,.5,{scale: 0,rotate: -20,stagger: .03},.2)
+    let mobile = this.$virtualbuddy.isMobile
+    gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: mobile ? 0 : .03})
+  },
+  data(){
+    return{
+      momentum: 0
+    }
   },
   computed:{
     sections(){
@@ -30,7 +35,7 @@ export default {
         for (let b = 1; b <= 40; b++){
           items.push({
             class: this.getClass(),
-            props: this.getProps(b)
+            props: this.getProps(a,b)
           })
         }
         sections.push(items)
@@ -40,12 +45,13 @@ export default {
     }
   },
   methods: {
-    getProps(index) {
+    getProps(a,b) {
       return {
-        x: this.rand(-9,9),
-        y: this.rand(-4,4),
-        rotate: this.rand(-5,5),
-        mobile: true
+        x: `${this.rand(-40,40)}vw`,
+        y: `${this.rand(-40,40)}vh`,
+        rotate: this.rand(-100,100),
+        mobile: true,
+        log: a == 1 && b == 1
       };
     },
     rand(min, max){
@@ -65,6 +71,9 @@ export default {
         black: int >= 50 && int <= 60,
         yellow: int >= 30 && int <= 40
       }
+    },
+    toggleMomentum(){
+      this.momentum = this.momentum ? 0 : 10
     }
   }
 };
@@ -76,9 +85,22 @@ export default {
   overflow: hidden;
 }
 
+#home button{
+  position: fixed;
+  bottom: 10%;
+  left: 10%;
+  outline: none;
+  border: 1px solid blue;
+  background: white;
+  color: blue;
+  padding: 10px 20px;
+  font-size: inherit;
+}
+
 #home .section {
   display: flex;
   flex-wrap: wrap;
+  margin: 0px -.5vw;
 }
 
 #home .item {

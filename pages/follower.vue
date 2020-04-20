@@ -2,7 +2,7 @@
   <div id="follower" class="container" v-page v-section>
     <div
       class="circle-container"
-      v-element="{onMouseEnter, onMouseOver,onMouseLeave}"
+      v-element="{onMouseOver}"
       ref="container"
       >
       <div class="circle" ref="circle">
@@ -31,24 +31,25 @@ export default {
     this.getCircle()
   },
   methods: {
-    onMouseOver(mouse, smooth) {
-      if (!smooth) return
-      this.mouse.x = mouse.x - this.circle.left - (this.circle.width / 2)
-      this.mouse.y = mouse.y - this.circle.top - (this.circle.height / 2)
+    onMouseOver({entering, leaving, active, x, y}) {
 
-      if (!this.ticking) this.handleAnimation()
+      if (active){
+        this.mouse.x = x - this.circle.left - (this.circle.width / 2)
+        this.mouse.y = y - this.circle.top - (this.circle.height / 2)
+        if (!this.ticking) this.handleAnimation()
+      }
 
-    },
-    onMouseEnter(mouse, smooth){
-      if (!smooth) return
-      this.lerpAmount = .2
-    },
-    onMouseLeave(mouse, smooth) {
-      if (!smooth) return
-      this.lerpAmount = .025
-      this.mouse.x = 0
-      this.mouse.y = 0
-      this.handleAnimation()
+      if (entering){
+        this.lerpAmount = .2
+      }
+
+      if (leaving){
+        this.lerpAmount = .025
+        this.mouse.x = 0
+        this.mouse.y = 0
+        this.handleAnimation()
+      }
+
     },
     handleAnimation(){
       this.ticking = Math.abs(this.button.x - this.mouse.x) > .1 || Math.abs(this.button.y - this.mouse.y) > .1
@@ -68,13 +69,13 @@ export default {
     getCircle(){
       let circleRect = this.$refs.circle.getBoundingClientRect();
       let containerRect = this.$refs.container.getBoundingClientRect();
-      let translate = this.$virtualbuddy.getTranslate(this.$refs.circle)
+      let transform = this.$virtualbuddy.getTransform(this.$refs.circle)
 
       this.circle = {
         height: circleRect.height,
         width: circleRect.width,
-        top: circleRect.top - containerRect.top - translate.y,
-        left: circleRect.left - containerRect.left - translate.x
+        top: circleRect.top - containerRect.top - transform.y,
+        left: circleRect.left - containerRect.left - transform.x
       }
     }
   }

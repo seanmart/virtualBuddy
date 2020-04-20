@@ -42,71 +42,78 @@ export function type(type,value){
   }
 }
 
-export function isDescendant(parent, child) {
-     var node = child.parentNode;
-     while (node != null) {
-         if (node == parent) {
-             return true;
-         }
-         node = node.parentNode;
-     }
-     return false;
+export function minMax(value,min,max){
+  return Math.max(Math.min(value,max),min)
+}
+
+export function transform(el, x = 0, y = 0, r = 0) {
+  let transform = ""
+  if (x || y) transform = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1) `;
+  if (r) transform += `rotate3d(0,0,1,${r}deg)`
+
+  el.style.webkitTransform = transform;
+  el.style.msTransform = transform;
+  el.style.transform = transform;
 }
 
 export function getPosition(el){
 
+  let bounds = el.getBoundingClientRect()
+  let transform = getTransform(el)
+  let rotate = getRotation(transform.r,el.offsetHeight,el.offsetWidth)
+
   let position = {}
 
-  position.top = getTop(el)
-  position.left = getLeft(el)
-  position.bottom = position.top + el.offsetHeight
-  position.right = position.left + el.offsetWidth
+  position.height = el.offsetHeight
+  position.width = el.offsetWidth
+  position.top = bounds.top - transform.y - rotate.top
+  position.left = bounds.left - transform.x - rotate.left
+  position.bottom = position.top + position.height
+  position.right = position.left + position.width
 
   return position
 
 }
 
-export function getTranslate(el) {
-    const translate = {}
-    if(!window.getComputedStyle) return ;
+export function getTransform(el) {
 
-    const style = getComputedStyle(el);
-    const transform = style.transform || style.webkitTransform || style.mozTransform;
+    let transform = {x:0,y:0,r: 0}
 
-    if (!transform) return
-    let mat = transform.match(/^matrix3d\((.+)\)$/);
-    if(mat) return parseFloat(mat[1].split(', ')[13]);
+    if(window.getComputedStyle){
 
-    mat = transform.match(/^matrix\((.+)\)$/);
-    translate.x = mat ? parseFloat(mat[1].split(', ')[4]) : 0;
-    translate.y = mat ? parseFloat(mat[1].split(', ')[5]) : 0;
+      let style = getComputedStyle(el,null);
 
-    return translate;
+      let ts = style.getPropertyValue("-webkit-transform") ||
+                      style.getPropertyValue("-moz-transform") ||
+                      style.getPropertyValue("-ms-transform") ||
+                      style.getPropertyValue("-o-transform") ||
+                      style.getPropertyValue("transform")
+
+      let mat = ts.match(/^matrix\((.+)\)$/)
+
+      if (mat){
+
+        let values = mat[1].split(',').map(v => parseFloat(v))
+
+        transform.x = parseFloat(values[4])
+        transform.y = parseFloat(values[5])
+        transform.r = Math.round(Math.atan2(values[1], values[0]) * (180/Math.PI));
+
+        //console.log(values)
+
+      }
+    }
+
+    return transform
 }
 
-export function minMax(value,min,max){
-  return Math.max(Math.min(value,max),min)
+export function round(value,place){
+  return parseFloat(value.toFixed(place))
 }
 
-export function getTop(el){
-  let top = 0
-  do {
-    top += el.offsetTop
-    el = el.offsetParent;
-  } while(el)
-  return top
-}
+export function getRotation(angle,height,width){
 
-export function getLeft(el){
-  let left = 0
-  do {
-    left += el.offsetLeft
-    el = el.offsetParent
-  } while(el)
-  return left
-}
-
-export function rotateRect(angle,height,width){
+    if (!angle) return {left: 0, right: 0, bottom: 0, top: 0}
 
     let a = (angle * Math.PI) / 180;
     let xAx = Math.cos(a);  // x axis x
@@ -141,8 +148,5 @@ export function rotateRect(angle,height,width){
       top: Math.min(r[0][1], r[1][1], r[2][1], r[3][1]),
       bottom: Math.max(r[0][1], r[1][1], r[2][1], r[3][1]) - h
     }
-
-
-
 
 }

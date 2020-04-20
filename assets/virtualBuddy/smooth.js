@@ -1,6 +1,6 @@
 import Core from './core'
 import VirtualScroll from 'virtual-scroll'
-import {minMax, lerp} from './helpers'
+import {minMax, lerp, transform, round} from './helpers'
 
 export default class extends Core{
   constructor(options){
@@ -71,14 +71,6 @@ export default class extends Core{
 
 
 
-  // CHECK //////////////////////////////////////////////////////////////////////////////////////
-
-  checkSection(section){
-    super.checkSection(section)
-    if (section.inView) this.transform(section.el,0,-this.scroll.top)
-  }
-
-
   // HANDLE //////////////////////////////////////////////////////////////////////////////////////
 
   handleDelta(e){
@@ -86,11 +78,22 @@ export default class extends Core{
     if (!this.isScrolling && !this.isTouchingScrollbar) this.checkScroll()
   }
 
+  handleResize(){
+    super.handleResize()
+    this.checkScroll(true)
+  }
+
 
 
   // CHECK //////////////////////////////////////////////////////////////////////////////////////
 
+  checkSection(section){
+    super.checkSection(section)
+    if (section.active) transform(section.el,0,-this.scroll.top)
+  }
+
   checkScroll(force = false){
+
     this.isScrolling = Math.abs(this.delta - this.scroll.top) > .1
 
     if (this.isScrolling || force){
@@ -102,7 +105,12 @@ export default class extends Core{
         this.checkScroll()
       })
 
+    } else {
+      let scroll = Math.floor(this.scroll.top)
+      this.updateScroll(scroll)
+      this.transformScrollbar()
     }
+
   }
 
 
@@ -134,8 +142,9 @@ export default class extends Core{
     document.body.append(this.scrollbar.el);
 
     this.scrollbar.el.addEventListener('mousedown', this.touchScrollbar)
-    this.addEvent('mousemove',this.moveScrollbar)
-    this.addEvent('mouseup',this.releaseScrollbar)
+    this.events.mouseover.push({el: this.scrollbar.el, fn: this.moveScrollbar})
+    this.events.mouseup.push({el: this.scrollbar.el, fn: this.releaseScrollbar})
+
   }
 
   updateScrollbar(){
@@ -150,9 +159,9 @@ export default class extends Core{
     this.scrollbar.el.style.opacity = 1
   }
 
-  moveScrollbar(e){
+  moveScrollbar({x,y}){
     if (this.isTouchingScrollbar){
-      let difference = ((e.clientY - this.scrollbar.offset) / this.windowheight) * (this.limit + this.windowheight)
+      let difference = ((y - this.scrollbar.offset) / this.windowheight) * (this.limit + this.windowheight)
       this.delta = minMax(this.scrollbar.scroll + difference, 0, this.limit)
       this.checkScroll()
     }
@@ -168,7 +177,7 @@ export default class extends Core{
       clearTimeout(this.scrollbar.timeout)
       this.scrollbar.el.style.opacity = 1
       let distance = this.windowheight * (this.scroll.top / (this.limit + this.windowheight))
-      this.transform(this.scrollbar.el,0,distance)
+      transform(this.scrollbar.el,0,distance)
       this.scrollbar.timeout = setTimeout(()=> this.scrollbar.el.style.opacity = 0, 300)
 
   }

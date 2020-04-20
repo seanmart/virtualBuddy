@@ -6,6 +6,7 @@ export default class extends Core{
     super(options)
 
     this.isTicking = false
+    this.isCalculating = false
 
   }
 
@@ -26,9 +27,15 @@ export default class extends Core{
     if (!this.isTicking) this.checkScroll()
   }
 
+  handleResize(force){
+    if (force) {
+      super.handleResize()
+      this.checkScroll()
+    }
+  }
+
   handleOrientationChange(){
-    console.log('orentation change')
-    this.handleResize()
+    this.handleResize(true)
   }
 
   checkScroll(){
@@ -39,6 +46,7 @@ export default class extends Core{
       this.updateScroll(window.scrollY)
       this.isTicking = false
     })
+
   }
 
   updateWindow() {

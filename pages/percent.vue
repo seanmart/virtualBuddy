@@ -56,9 +56,9 @@ export default {
     },
     box3(){
       return{
-        label: 'Rotation',
+        label: 'Transform',
         props:{
-          rotate: 10,
+          rotate: 45,
           offset: this.offset,
           onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),
           onEnter:()=> this.active.box3 = true,
@@ -88,17 +88,18 @@ export default {
   flex: 0 0 auto;
   width: 200px;
   height: 200px;
-  background: red;
+  background: blue;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 30px;
   margin: 40px;
+  border: 1px solid black;
 }
 
 #percent .box.active{
-  background: blue;
+  background: red;
 }
 
 #percent .lines{

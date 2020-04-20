@@ -28,6 +28,9 @@ Vue.directive("element", {
   bind: function(el, binding) {
     vb.addElement(el, binding.value);
   },
+  update: function(el, binding){
+    vb.updateElement(el, binding.value);
+  },
   unbind: function(el){
     vb.removeElement(el)
   }
