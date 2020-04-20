@@ -64,6 +64,7 @@ export default {
       }
     },
     transform(){
+      if (!this.$refs.circle) return
       this.$refs.circle.style.transform = `translate(${this.button.x}px,${this.button.y}px)`;
     },
     getCircle(){

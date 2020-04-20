@@ -198,7 +198,7 @@ export default class {
 
   handleMouseOver(event){
 
-    if (!this.smooth) return
+    if (this.mobile) return
 
     this.mouse.y = this.scroll.top + event.clientY;
     this.mouse.x = event.clientX;
@@ -219,15 +219,19 @@ export default class {
       this.mouse.x >= left &&
       this.mouse.x <= right;
 
-    e.onMouseOver({
-      entering: !e.mouseIsOver && mouseIsOver,
-      leaving: e.mouseIsOver && !mouseIsOver,
-      active: e.mouseIsOver && mouseIsOver,
-      x: minMax(this.mouse.x - left, 0, right - left),
-      y: minMax(this.mouse.y - top, 0, bottom - top)
-    })
+    if (mouseIsOver || e.mouseIsOver){
 
-    e.mouseIsOver = mouseIsOver
+      e.onMouseOver({
+        entering: !e.mouseIsOver && mouseIsOver,
+        leaving: e.mouseIsOver && !mouseIsOver,
+        active: e.mouseIsOver && mouseIsOver,
+        x: minMax(this.mouse.x - left, 0, right - left),
+        y: minMax(this.mouse.y - top, 0, bottom - top)
+      })
+
+      e.mouseIsOver = mouseIsOver
+
+    }
   }
 
   handleMouseUp(){
@@ -329,11 +333,9 @@ export default class {
     e.onLeave = o.onLeave || null
     e.onMouseOver = o.onMouseOver || null
 
-    if (e.onMouseOver) e.mouseIsOver = false
-
     let index = this.events.mouseover.findIndex(i => i.el == e.el)
-    if (!index && e.onMouseOver) this.events.mouseover.push({el: e.el, fn: ()=> this.handleElementMouseOver(e)})
-    if (index && !e.onMouseOver) this.events.mouseover.splice(index,1)
+    if (index < 0 && e.onMouseOver) this.events.mouseover.push({el: e.el, fn: ()=> this.handleElementMouseOver(e)})
+    if (index >= 0 && !e.onMouseOver) this.events.mouseover.splice(index,1)
 
   }
 
@@ -346,8 +348,8 @@ export default class {
     s.onMouseOver = o.onMouseOver || null
 
     let index = this.events.mouseover.findIndex(i => i.el == s.el)
-    if (!index && s.onMouseOver) this.events.mouseover.push({el: s.el, fn: ()=> this.handleElementMouseOver(s)})
-    if (index && !s.onMouseOver) this.events.mouseover.splice(index,1)
+    if (index < 0 && s.onMouseOver) this.events.mouseover.push({el: s.el, fn: ()=> this.handleElementMouseOver(s)})
+    if (index >= 0 && !s.onMouseOver) this.events.mouseover.splice(index,1)
 
   }
 }

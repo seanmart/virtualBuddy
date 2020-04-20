@@ -100,13 +100,12 @@ export default {
 #home .section {
   display: flex;
   flex-wrap: wrap;
-  margin: 0px -.5vw;
 }
 
 #home .item {
   flex: 0 0 auto;
-  width: 19vw;
-  height: 19vw;
+  width: 15vw;
+  height: 15vw;
   margin: 0.5vw;
   background: blue;
   opacity: 0;
@@ -173,7 +172,12 @@ export default {
 
 @media screen and (max-width: 600px){
   #home button{
-    bottom: 150px;
+    bottom: 50px;
+  }
+
+  #home .item{
+    width: 19vw;
+    height: 19vw;
   }
 }
 
