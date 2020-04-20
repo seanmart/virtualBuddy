@@ -61,6 +61,7 @@ export default class extends Core{
     this.vs = new VirtualScroll({
       el: this.el,
       mouseMultiplier: navigator.platform.indexOf('Win') > -1 ? 1 : 0.25,
+      touchMultiplier: 4,
       useKeyboard: false,
       passive: true
     })

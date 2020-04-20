@@ -7,8 +7,8 @@ export default class {
 
     this.lerp = lerp
     this.getTransform = getTransform
-    this.isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    this.instance = new Smooth({...options,smooth: true});
+    let mobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    this.instance = new Smooth({...options,smooth: true, mobile });
   }
 
   //this.isMobile ? new Native({...options, smooth: false}) : new Smooth({...options,smooth: true});
