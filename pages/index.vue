@@ -171,6 +171,12 @@ export default {
   background-color: yellow;
 }
 
+@media screen and (max-width: 600px){
+  #home button{
+    bottom: 150px;
+  }
+}
+
 
 
 </style>

@@ -96,5 +96,10 @@ nav a{
   header .logo{
     font-size: 25px;
   }
+
+  .container{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 }
 </style>
