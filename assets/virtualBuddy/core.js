@@ -56,7 +56,8 @@ export default class {
 
     this.scroll = {top: 0, bottom: this.windowheight, diff: 0, direction: 'down'}
 
-    this.updateSections()
+    this.updatePositions()
+
   }
 
 
@@ -78,7 +79,7 @@ export default class {
     s.inView = false
     s.limit = 0
 
-    this.updateElement(s,o)
+    this.updateSection(s,o)
 
     this.sections.push(s)
 
@@ -89,14 +90,13 @@ export default class {
     let e = {}
 
     e.el = el
-    e.visible = false
     e.position = {}
-    e.view = {}
+    e.values = {}
+    e.transform = {x:0, y:0, r:0}
+    e.visible = false
 
     this.updateElement(e,o)
-
     this.elements.push(e)
-
     el.setAttribute("data-element","");
 
   }
@@ -154,28 +154,29 @@ export default class {
 
   checkElement(e){
 
-    let visible = e.view.start + e.transform.m <= this.scroll.bottom
-                && e.view.end + e.transform.m >= this.scroll.top
+    let visible = e.start <= this.scroll.top && e.end >= this.scroll.top
 
     if (visible || e.visible ){
 
-      let scrolled = e.inView ? this.scroll.top : this.scroll.bottom - (e.view.start + e.transform.m)
-      let percent = minMax(scrolled / (e.view.duration + e.transform.m),0,1)
+      let scroll = this.scroll
+      let scrolled = scroll.top - e.start
+      let percent = minMax(scrolled / (e.distance),0,1)
 
-      if (e.onEnter && visible && !e.visible) e.onEnter(this.scroll)
-      if (e.onScroll) e.onScroll({scrolled, percent, scroll: this.scroll})
-      if (e.onLeave && !visible && e.visible) e.onLeave(this.scroll)
+      if (e.onEnter && visible && !e.visible) e.onEnter()
+      if (e.onScroll) e.onScroll({scrolled, percent, scroll})
+      if (e.onLeave && !visible && e.visible) e.onLeave(scroll)
 
-      if ((e.x || e.y || e.r || e.m) && (this.smooth || e.mobile)){
+      if ((e.x || e.y || e.r) && (this.smooth || e.mobile)){
+
+        let p = percent
 
         let t = {
-          x: e.x * percent,
-          y: e.y * percent,
-          r: e.r * percent,
-          m: this.smooth ? lerp(e.transform.m,-this.scroll.diff * e.m,.1) : 0
+          x: e.x * p,
+          y: e.y * p,
+          r: e.r * p
         }
 
-        transform(e.el, t.x, t.y + t.m, t.r)
+        transform(e.el, t.x, t.y, t.r)
         e.transform = t
 
       }
@@ -191,14 +192,14 @@ export default class {
   // HANDLE ----------------------------------------------------------------------------------------
 
   handleResize(){
-    this.events.resize.forEach(event => event.fn())
     this.updateWindow();
-    this.updateSections();
+    this.updatePositions();
+    this.events.resize.forEach(event => event.fn())
   }
 
   handleMouseOver(event){
 
-    if (this.mobile) return
+    if (!this.smooth) return
 
     this.mouse.y = this.scroll.top + event.clientY;
     this.mouse.x = event.clientX;
@@ -213,23 +214,23 @@ export default class {
     let left = e.position.left + e.transform.x
     let right = e.position.right + e.transform.x
 
-    let mouseIsOver =
+    let hover =
       this.mouse.y >= top &&
       this.mouse.y <= bottom &&
       this.mouse.x >= left &&
       this.mouse.x <= right;
 
-    if (mouseIsOver || e.mouseIsOver){
+    if (hover || e.hover){
 
       e.onMouseOver({
-        entering: !e.mouseIsOver && mouseIsOver,
-        leaving: e.mouseIsOver && !mouseIsOver,
-        active: e.mouseIsOver && mouseIsOver,
+        entering: !e.hover && hover,
+        leaving: e.hover && !hover,
+        active: e.hover && hover,
         x: minMax(this.mouse.x - left, 0, right - left),
         y: minMax(this.mouse.y - top, 0, bottom - top)
       })
 
-      e.mouseIsOver = mouseIsOver
+      e.hover = hover
 
     }
   }
@@ -263,69 +264,43 @@ export default class {
 
   }
 
-  updateSections(){
-    this.sections.forEach(s => {
+  updatePositions(){}
 
-      s.position = getPosition(s.el)
-      s.inView = s.position.top < this.windowheight
-      s.limit = s.inView ? s.position.bottom : this.windowheight + s.position.height
+  updateValues(e){
 
-      let t = getTransform(s.el)
+    let position = e.position
+    let duration = getValue(e.values.duration,e.el)
+    let inside = e.inside ? position.height : 0
 
-      s.el.querySelectorAll("[data-element]").forEach(el => {
+    let offset = {
+      start: getValue(e.values.offsetStart,e.el) + inside,
+      end: getValue(e.values.offsetEnd,e.el) + inside
+    }
 
-        let e = this.elements.find(i => i.el == el)
+    e.start = Math.max (position.top + offset.start - this.windowheight,0)
+    e.end = duration ? e.start + duration : position.bottom - offset.end
 
-        if (e){
+    e.x = isNaN(e.values.x) ? getValue(e.values.x,e.el) : (e.values.x / 10) * (e.end - e.start)
+    e.y = isNaN(e.values.y) ? getValue(e.values.y,e.el) : (e.values.y / 10) * (e.end - e.start)
+    e.r = isNaN(e.values.r) ? getValue(e.values.r,e.el) : (e.values.r / 100) * (e.end - e.start)
 
-          e.position = getPosition(el)
-          e.position.top -= t.y
-          e.position.bottom -= t.y
-          e.position.left -= t.x
-          e.position.right -= t.x
+    e.end += e.y + getRotation(e.r, position.height, position.width).bottom
+    e.distance = e.end - e.start
 
-
-          let offsetTop = e.updates.offsetTop ? getValue(e.updates.offsetTop,el) : 0
-          let offsetBottom = e.updates.offsetBottom ? getValue(e.updates.offsetBottom,el) : 0
-          let duration = e.updates.duration ? getValue(e.updates.duration,el) : 0
-          let rotation = getRotation(e.r, e.position.height, e.position.width)
-
-          if (e.inside){
-            offsetBottom += e.position.height
-            offsetTop += e.position.height
-          }
-
-          e.inView = e.position.top < this.windowheight
-          e.view.start = e.position.top + offsetTop
-          e.view.end = e.position.bottom - offsetBottom + e.y + rotation.bottom
-
-          e.view.duration = e.inView
-          ? e.position.top - offsetBottom - offsetTop + e.position.height + e.y + rotation.bottom
-          : this.windowheight - offsetBottom - offsetTop + e.position.height + e.y + rotation.bottom
-
-        }
-      })
-    })
   }
 
-  updateElement(e,o){
+  updateElement(e,o,updateValues = false){
     e.log = o.log || null
     e.inside = o.inside || false
     e.mobile = o.mobile || false
 
     // transform
-    if (!e.transform) e.transform = {x:0, y:0, r:0, m:0}
-    e.x = o.x ? getValue(o.x,e.el) : 0,
-    e.y = o.y ? -getValue(o.y,e.el) : 0,
-    e.r = o.rotate ? getValue(o.rotate,e.el) : 0,
-    e.m = o.momentum || 0
-
-    // updates
-    e.updates = {
-      duration: o.duration || null,
-      offsetTop: o.offsetTop || o.offset || null,
-      offsetBottom: o.offsetBottom || o.offset || null
-    }
+    e.values.x = o.x || 0,
+    e.values.y = o.y || 0,
+    e.values.r = o.rotate || 0
+    e.values.duration = o.duration || 0,
+    e.values.offsetStart = o.offsetStart || o.offset || 0,
+    e.values.offsetEnd = o.offsetEnd || o.offset || 0
 
     // events
     e.onScroll = o.onScroll || null
@@ -336,6 +311,8 @@ export default class {
     let index = this.events.mouseover.findIndex(i => i.el == e.el)
     if (index < 0 && e.onMouseOver) this.events.mouseover.push({el: e.el, fn: ()=> this.handleElementMouseOver(e)})
     if (index >= 0 && !e.onMouseOver) this.events.mouseover.splice(index,1)
+
+    if (updateValues) this.updateValues(e)
 
   }
 

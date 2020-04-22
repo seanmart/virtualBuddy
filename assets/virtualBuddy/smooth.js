@@ -1,13 +1,13 @@
 import Core from './core'
 import VirtualScroll from 'virtual-scroll'
-import {minMax, lerp, transform, round} from './helpers'
+import {minMax, lerp, transform, round, getPosition, getTransform, getRotation} from './helpers'
 
 export default class extends Core{
   constructor(options){
 
     let scrollbar = {
       round: false,
-      color: '#ccc',
+      color: '#bbb',
       thickness: 10,
       el: null,
       scroll: 0,
@@ -15,6 +15,7 @@ export default class extends Core{
       last: 0,
       timeout: null
     }
+
     options.scrollbar = Object.assign({},scrollbar,options.scrollbar || {})
 
     super(options)
@@ -49,7 +50,7 @@ export default class extends Core{
     super.initLoad()
     this.delta = 0
     this.scrollbar.scroll = 0
-    this.transformScrollbar()
+    this.updateScrollbar()
   }
 
 
@@ -80,10 +81,10 @@ export default class extends Core{
   }
 
   handleResize(){
+    this.updateScrollbar()
     super.handleResize()
     this.checkScroll(true)
   }
-
 
 
   // CHECK //////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +96,7 @@ export default class extends Core{
 
   checkScroll(force = false){
 
-    this.isScrolling = Math.abs(this.delta - this.scroll.top) > .1
+    this.isScrolling = Math.abs(this.delta - this.scroll.top) > 1
 
     if (this.isScrolling || force){
 
@@ -112,15 +113,6 @@ export default class extends Core{
       this.transformScrollbar()
     }
 
-  }
-
-
-
-  // UPDATE //////////////////////////////////////////////////////////////////////////////////////
-
-  update(){
-    super.update()
-    this.updateScrollbar()
   }
 
 
@@ -181,6 +173,34 @@ export default class extends Core{
       transform(this.scrollbar.el,0,distance)
       this.scrollbar.timeout = setTimeout(()=> this.scrollbar.el.style.opacity = 0, 300)
 
+  }
+
+  updatePositions(){
+    this.sections.forEach(s => {
+
+      s.position = getPosition(s.el)
+      s.inView = s.position.top < this.windowheight
+      s.limit = s.inView ? s.position.bottom : this.windowheight + s.position.height
+
+      let t = getTransform(s.el)
+
+      s.el.querySelectorAll("[data-element]").forEach(el => {
+
+        let e = this.elements.find(i => i.el == el)
+
+        if (e){
+          e.position = getPosition(el)
+          e.position.top -= t.y
+          e.position.bottom -= t.y
+          e.position.left -= t.x
+          e.position.right -= t.x
+
+          this.updateValues(e)
+
+        }
+
+      })
+    })
   }
 
 }

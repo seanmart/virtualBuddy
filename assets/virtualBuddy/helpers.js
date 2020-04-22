@@ -4,7 +4,7 @@ export function lerp(start, end, amt){
 
 export function getValue(value,el){
 
-  if (value == undefined || value == null) return undefined
+  if (value == undefined || value == null) return value
   if (type('number', value) || type('function', value)) return value
 
   let parsedValue = parseFloat(value)
@@ -18,6 +18,8 @@ export function getValue(value,el){
        : value.indexOf('vw') !== -1
            ? parsedValue * (window.innerWidth / 100)
        : value.indexOf('px') !== -1
+           ? parsedValue
+       : value.indexOf('deg') !== -1
            ? parsedValue
        : 0
 }
@@ -66,8 +68,8 @@ export function getPosition(el){
 
   position.height = el.offsetHeight
   position.width = el.offsetWidth
-  position.top = bounds.top - transform.y - rotate.top
-  position.left = bounds.left - transform.x - rotate.left
+  position.top = bounds.top + transform.y - rotate.top
+  position.left = bounds.left + transform.x - rotate.left
   position.bottom = position.top + position.height
   position.right = position.left + position.width
 
@@ -98,8 +100,6 @@ export function getTransform(el) {
         transform.x = parseFloat(values[4])
         transform.y = parseFloat(values[5])
         transform.r = Math.round(Math.atan2(values[1], values[0]) * (180/Math.PI));
-
-        //console.log(values)
 
       }
     }

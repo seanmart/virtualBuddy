@@ -10,7 +10,7 @@
         :class="item.class"
         />
     </div>
-    <button type="button" @click="toggleMomentum">Use {{momentum ? 'Scroll' : 'Momentum'}}</button>
+    <button v-if="!mobile" type="button" @click="toggleMomentum">Use {{momentum ? 'Scroll' : 'Momentum'}}</button>
   </div>
 </template>
 
@@ -18,12 +18,14 @@
 import gsap from 'gsap'
 export default {
   mounted(){
-    let mobile = this.$virtualbuddy.isMobile
-    gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: mobile ? 0 : .03})
+    this.mobile = this.$virtualbuddy.isMobile
+    gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .03})
   },
   data(){
     return{
-      momentum: 0
+      mobile: true,
+      momentum: 0,
+      count: 40
     }
   },
   computed:{
@@ -32,7 +34,7 @@ export default {
 
       for (let a = 1; a <= 4; a++){
         let items = []
-        for (let b = 1; b <= 40; b++){
+        for (let b = 1; b <= this.count; b++){
           items.push({
             class: this.getClass(),
             props: this.getProps(a,b)
@@ -47,9 +49,9 @@ export default {
   methods: {
     getProps(a,b) {
       return {
-        x: `${this.rand(-40,40)}vw`,
-        y: `${this.rand(-40,40)}vh`,
-        rotate: this.rand(-100,100),
+        x: this.rand(-5,5),
+        y: this.rand(-5,5),
+        rotate: `${this.rand(-50,50)}deg`,
         mobile: true,
         log: a == 1 && b == 1
       };
@@ -57,10 +59,10 @@ export default {
     rand(min, max){
 
       if (min < 0){
-        return min + Math.random() * (Math.abs(min) + max)
+        return Math.floor(min + Math.random() * (Math.abs(min) + max))
       }
 
-      return Math.round(Math.random() * max) + min
+      return Math.floor(Math.random() * max) + min
     },
     getClass(){
       let int = this.rand(1,80)

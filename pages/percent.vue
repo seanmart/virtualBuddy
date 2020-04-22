@@ -6,27 +6,28 @@
       <div class="box" :class="{active: active.box3}" v-element="box3.props">{{percent.box3}}%</div>
     </div>
     <div class="lines" :style="{top: offset, bottom: offset}">
-      <p>{{box1.label}}</p>
-      <p>{{box2.label}}</p>
-      <p>{{box3.label}}</p>
+      <div class="line"><p>{{box1.label}}</p></div>
+      <div class="line"><p>{{box2.label}}</p></div>
+      <div class="line"><p>{{box3.label}}</p></div>
     </div>
   </div>
 </template>
 
 <script>
+import gsap from 'gsap'
 export default {
   data(){
     return{
       offset: '25vh',
       percent:{
-        box1: 0,
+        box1:0,
         box2:0,
         box3:0
       },
       active:{
-        box1: false,
+        box1:false,
         box2:false,
-        box3: false
+        box3:false
       }
     }
   },
@@ -58,7 +59,8 @@ export default {
       return{
         label: 'Transform',
         props:{
-          rotate: 45,
+          rotate: '280deg',
+          mobile: true,
           offset: this.offset,
           onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),
           onEnter:()=> this.active.box3 = true,
@@ -86,15 +88,15 @@ export default {
 
 #percent .box{
   flex: 0 0 auto;
-  width: 200px;
-  height: 200px;
+  width: 25vw;
+  height: 10vw;
+  margin: 3vw;
   background: blue;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
-  margin: 40px;
+  font-size: 5vw;
   border: 1px solid black;
 }
 
@@ -116,19 +118,33 @@ export default {
 }
 
 
-#percent .lines p{
-  width: 200px;
+#percent .line{
+  width: 25vw;
+  margin: 3vw;
   height: 100%;
-  font-size: 25px;
-  font-weight: 700;
   background: rgba(0,0,255,.1);
-  margin: 40px;
-  text-align: center;
-  text-transform: uppercase;
-  color: blue;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#percent .line p{
+  font-size: 3vw;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  color: blue;
+}
+
+@media screen and (max-width: 600px){
+  #percent .line p{
+    font-size: 8vw;
+    transform: rotate(90deg);
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    color: blue;
+  }
 }
 
 </style>

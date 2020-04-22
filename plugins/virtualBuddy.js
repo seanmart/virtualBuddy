@@ -1,7 +1,11 @@
 import VirtualBuddy from "@/assets/virtualBuddy";
 import Vue from "vue";
 
-let vb = new VirtualBuddy();
+let vb = new VirtualBuddy({
+  scrollbar:{
+    color: 'blue'
+  }
+});
 
 Vue.directive("window", {
   bind: function(el, binding) {
@@ -27,9 +31,6 @@ Vue.directive("section", {
 Vue.directive("element", {
   bind: function(el, binding) {
     vb.addElement(el, binding.value);
-  },
-  update: function(el, binding){
-    vb.updateElement(el, binding.value);
   },
   unbind: function(el){
     vb.removeElement(el)

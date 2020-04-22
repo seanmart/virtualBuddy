@@ -1,5 +1,5 @@
 import Core from './core'
-import {minMax, lerp} from './helpers'
+import {minMax, lerp, getPosition} from './helpers'
 
 export default class extends Core{
   constructor(options){
@@ -11,12 +11,9 @@ export default class extends Core{
   }
 
   init(){
-    this.handleOrientationChange = this.handleOrientationChange.bind(this);
     this.handleScroll = this.handleScroll.bind(this)
-
-    window.addEventListener("orientationchange", this.handleOrientationChange);
-
     this.addScroll()
+    super.init()
   }
 
   addScroll(){
@@ -27,16 +24,13 @@ export default class extends Core{
     if (!this.isTicking) this.checkScroll()
   }
 
-  handleResize(force){
-    if (force) {
+  handleResize(){
+    if (window.innerWidth !== this.windowwidth) {
       super.handleResize()
       this.checkScroll()
     }
   }
 
-  handleOrientationChange(){
-    this.handleResize(true)
-  }
 
   checkScroll(){
 
@@ -53,5 +47,23 @@ export default class extends Core{
     this.windowheight = screen.availHeight;
     this.windowwidth = window.innerWidth;
     this.limit = this.el.offsetHeight - this.windowheight;
+  }
+
+  updatePositions(){
+    
+    this.sections.forEach(s => {
+      s.position = getPosition(s.el)
+      s.position.top += this.scroll.top
+      s.position.bottom += this.scroll.top
+    })
+
+    this.elements.forEach(e => {
+      e.position = getPosition(e.el)
+      e.position.top += this.scroll.top
+      e.position.bottom += this.scroll.top
+
+      this.updateValues(e)
+
+    })
   }
 }
