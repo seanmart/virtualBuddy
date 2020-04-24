@@ -19,7 +19,7 @@ import gsap from 'gsap'
 export default {
   mounted(){
     this.mobile = this.$virtualbuddy.isMobile
-    gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .03})
+    gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .02})
   },
   data(){
     return{

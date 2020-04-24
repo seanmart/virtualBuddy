@@ -1,5 +1,5 @@
 <template>
-  <div v-window>
+  <div>
     <header>
       <nuxt-link to="/" class="logo">Virtual Buddy</nuxt-link>
       <nav>
@@ -8,7 +8,7 @@
       </nav>
     </header>
 
-    <div v-container>
+    <div>
       <nuxt />
     </div>
 

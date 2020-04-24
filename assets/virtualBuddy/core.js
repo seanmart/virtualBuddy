@@ -10,13 +10,8 @@ export default class{
     this.inertia = .075
 
     this.window = {
-      el: null,
-      height: 0,
-      width: 0
-    }
-
-    this.container = {
-      el: null
+      html: document.documentElement,
+      body: document.body
     }
 
     this.page = {
@@ -52,6 +47,9 @@ export default class{
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('mousemove', this.handleMouseMove)
     window.addEventListener('visibility', this.handleVisibility)
+    window.addEventListener('scroll', this.handleScroll)
+
+    this.window.html.style.cssText = `height: 100vh; width: 100w; overflow: auto;`
   }
 
 
@@ -61,30 +59,15 @@ export default class{
   // -----------------------------------------------------------------------------------------------
 
 
-
-  addWindow(el){
-    this.window.el = el
-    this.handleScroll = this.handleScroll.bind(this);
-    this.window.el.addEventListener('scroll', this.handleScroll)
-
-    document.documentElement.style.cssText = `height: 100vh; width: 100w; overflow: hidden;`
-    el.style.cssText = `height: 100vh; width: 100w; overflow: auto;`
-  }
-
   addPage(el){
     this.page.el = el
     this.scroll.top = 0
     this.scroll.window = 0
     this.scroll.bottom = this.window.height
     this.scroll.last = 0
+    this.page.el.style.cssText = `position: fixed; top: 0px; left: 0px; right: 0px;`
 
-    if (this.smooth) el.style.cssText = `position: fixed; top: 0px; z-index: -1; transform: transform3d(0,0,0);`
-    if (this.window.el) this.window.el.scrollTo(0,0)
-    if (this.container.el) this.update()
-  }
-
-  addContainer(el){
-    this.container.el = el
+    window.scrollTo(0,0)
     this.update()
   }
 
@@ -98,6 +81,7 @@ export default class{
 
     this.updateSection(s,o)
     el.setAttribute("data-section","");
+    el.style.willChange = 'transform'
     this.sections.push(s)
   }
 
@@ -112,6 +96,7 @@ export default class{
 
     this.updateElement(e,o)
     el.setAttribute("data-element","");
+    el.style.willChange = 'transform'
     this.elements.push(e)
   }
 
@@ -173,8 +158,25 @@ export default class{
 
   checkSections(){
     this.sections.forEach(s => {
-      if (s.start <= this.scroll.bottom && s.end >= this.scroll.top){
+
+      if (s.start - this.window.height <= this.scroll.bottom && s.end + this.window.height >= this.scroll.top){
+
+        let visible = s.start <= this.scroll.top && s.end >= this.scroll.top
+        if (visible || s.visible){
+
+          let scroll = this.scroll
+          let scrolled = scroll.top - s.start
+          let percent = minMax(scrolled / (s.distance),0,1)
+
+          if (s.onEnter && visible && !s.visible) s.onEnter()
+          if (s.onScroll) s.onScroll({scrolled, percent, scroll})
+          if (s.onLeave && !visible && s.visible) s.onLeave(scroll)
+
+          s.visible = visible
+        }
+
         transform(s.el, 0,-this.scroll.top)
+        
       }
     })
   }
@@ -230,15 +232,14 @@ export default class{
     this.window.height = window.innerHeight
     this.window.width = window.innerWidth
     this.page.limit = this.page.el.offsetHeight
-    this.container.el.style.height = `${this.page.limit}px`
+    this.window.body.style.height = `${this.page.limit}px`
 
     this.sections.forEach(s => {
 
       s.position = getPosition(s.el)
-      s.inView = s.position.top < this.windowheight
-      s.limit = s.inView ? s.position.bottom : this.windowheight + s.position.height
-      s.start = s.position.top - this.window.height
-      s.end = s.position.bottom + this.window.height
+      s.start = Math.max (s.position.top - this.window.height,0)
+      s.end = s.position.bottom
+      s.distance = s.end - s.start
 
       let t = getTransform(s.el)
 
@@ -261,7 +262,7 @@ export default class{
   }
 
   updateScroll(){
-    this.scroll.window = this.window.el.scrollTop
+    this.scroll.window = window.scrollY
   }
 
   updateValues(e){
