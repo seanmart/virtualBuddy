@@ -7,7 +7,7 @@ export default class{
     this.elements = []
     this.sections = []
     this.isTicking = false
-    this.inertia = .075
+    this.inertia = this.smooth ? .075 : .2
 
     this.window = {
       height: 0,
