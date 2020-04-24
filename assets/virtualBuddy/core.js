@@ -7,7 +7,7 @@ export default class{
     this.elements = []
     this.sections = []
     this.isTicking = false
-    this.inertia = this.smooth ? .075 : .2
+    this.inertia = this.mobile ? .2 : .075
 
     this.window = {
       height: 0,
@@ -49,6 +49,8 @@ export default class{
     window.addEventListener('mousemove', this.handleMouseMove)
     window.addEventListener('visibility', this.handleVisibility)
     window.addEventListener('scroll', this.handleScroll)
+
+    document.body.style.overscrollBehavior = 'none'
 
   }
 
@@ -107,10 +109,6 @@ export default class{
   // -----------------------------------------------------------------------------------------------
 
 
-
-  removePage(){
-
-  }
 
   removeSection(el){
     let index = this.sections.findIndex(e => e.el == el)
@@ -196,7 +194,7 @@ export default class{
         if (e.onScroll) e.onScroll({scrolled, percent, scroll})
         if (e.onLeave && !visible && e.visible) e.onLeave(scroll)
 
-        if ((e.x || e.y || e.r) && (this.smooth || e.mobile)){
+        if ((e.x || e.y || e.r) && (!this.mobile || e.mobile)){
 
           let p = percent
 
@@ -329,6 +327,7 @@ export default class{
   }
 
   handleResize(){
+    if (this.mobile && this.window.width == window.innerWidth) return
     this.update()
     this.checkScroll(true)
     this.events.resize.forEach(i => i.fn())
@@ -339,7 +338,7 @@ export default class{
   }
 
   handleVisibility(){
-
+    this.update()
   }
 
 }

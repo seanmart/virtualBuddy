@@ -1,5 +1,3 @@
-import Native from "./native";
-import Smooth from "./smooth";
 import Core from './core'
 import {getTransform, lerp} from './helpers'
 
@@ -8,8 +6,8 @@ export default class {
 
     this.lerp = lerp
     this.getTransform = getTransform
-    this.isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    this.instance = new Core({...options, smooth: !this.isMobile})
+    this.mobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    this.instance = new Core({...options, mobile: this.mobile})
     //this.instance = this.isMobile ? new Native({...options, smooth: false}) : new Smooth({...options,smooth: true});
   }
 
