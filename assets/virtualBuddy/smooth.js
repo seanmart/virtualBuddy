@@ -87,6 +87,39 @@ export default class extends Core{
   }
 
 
+
+  // UPDATE //////////////////////////////////////////////////////////////////////////////////////
+
+  updatePositions(){
+    this.sections.forEach(s => {
+
+      s.position = getPosition(s.el)
+      s.inView = s.position.top < this.windowheight
+      s.limit = s.inView ? s.position.bottom : this.windowheight + s.position.height
+
+      let t = getTransform(s.el)
+
+      s.el.querySelectorAll("[data-element]").forEach(el => {
+
+        let e = this.elements.find(i => i.el == el)
+
+        if (e){
+          e.position = getPosition(el)
+          e.position.top -= t.y
+          e.position.bottom -= t.y
+          e.position.left -= t.x
+          e.position.right -= t.x
+
+          this.updateValues(e)
+
+        }
+
+      })
+    })
+  }
+
+
+
   // CHECK //////////////////////////////////////////////////////////////////////////////////////
 
   checkSection(section){
@@ -173,34 +206,6 @@ export default class extends Core{
       transform(this.scrollbar.el,0,distance)
       this.scrollbar.timeout = setTimeout(()=> this.scrollbar.el.style.opacity = 0, 300)
 
-  }
-
-  updatePositions(){
-    this.sections.forEach(s => {
-
-      s.position = getPosition(s.el)
-      s.inView = s.position.top < this.windowheight
-      s.limit = s.inView ? s.position.bottom : this.windowheight + s.position.height
-
-      let t = getTransform(s.el)
-
-      s.el.querySelectorAll("[data-element]").forEach(el => {
-
-        let e = this.elements.find(i => i.el == el)
-
-        if (e){
-          e.position = getPosition(el)
-          e.position.top -= t.y
-          e.position.bottom -= t.y
-          e.position.left -= t.x
-          e.position.right -= t.x
-
-          this.updateValues(e)
-
-        }
-
-      })
-    })
   }
 
 }

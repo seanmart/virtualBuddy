@@ -59,7 +59,8 @@ export default {
       return{
         label: 'Transform',
         props:{
-          rotate: '280deg',
+          rotate: '360deg',
+          y: -2,
           mobile: true,
           offset: this.offset,
           onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),

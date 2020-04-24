@@ -50,7 +50,6 @@ export default class extends Core{
   }
 
   updatePositions(){
-    
     this.sections.forEach(s => {
       s.position = getPosition(s.el)
       s.position.top += this.scroll.top

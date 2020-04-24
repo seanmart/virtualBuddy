@@ -68,8 +68,8 @@ export function getPosition(el){
 
   position.height = el.offsetHeight
   position.width = el.offsetWidth
-  position.top = bounds.top + transform.y - rotate.top
-  position.left = bounds.left + transform.x - rotate.left
+  position.top = bounds.top - transform.y - rotate.top
+  position.left = bounds.left - transform.x - rotate.left
   position.bottom = position.top + position.height
   position.right = position.left + position.width
 

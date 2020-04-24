@@ -13,9 +13,15 @@ Vue.directive("window", {
   }
 });
 
+Vue.directive("container", {
+  inserted: function(el, binding) {
+    vb.addContainer(el)
+  }
+});
+
 Vue.directive("page", {
   inserted: function(el, binding) {
-    vb.load()
+    vb.addPage(el)
   }
 });
 
