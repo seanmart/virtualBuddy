@@ -10,8 +10,9 @@ export default class{
     this.inertia = .075
 
     this.window = {
-      html: document.documentElement,
-      body: document.body
+      height: 0,
+      width: 0,
+      el: document.documentElement
     }
 
     this.page = {
@@ -49,7 +50,6 @@ export default class{
     window.addEventListener('visibility', this.handleVisibility)
     window.addEventListener('scroll', this.handleScroll)
 
-    this.window.html.style.cssText = `height: 100vh; width: 100w; overflow: auto;`
   }
 
 
@@ -176,7 +176,7 @@ export default class{
         }
 
         transform(s.el, 0,-this.scroll.top)
-        
+
       }
     })
   }
@@ -232,7 +232,7 @@ export default class{
     this.window.height = window.innerHeight
     this.window.width = window.innerWidth
     this.page.limit = this.page.el.offsetHeight
-    this.window.body.style.height = `${this.page.limit}px`
+    this.window.el.style.height = `${this.page.limit}px`
 
     this.sections.forEach(s => {
 

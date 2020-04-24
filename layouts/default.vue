@@ -33,6 +33,7 @@ html {
   box-sizing: border-box;
   font-size: 15px;
   color: black;
+  overscroll-behavior: none;
 }
 
 *,
