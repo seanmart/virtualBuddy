@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------------------------
+// HELPERS
+// -----------------------------------------------------------------------------------------------
+
 export function lerp(start, end, amt){
     return (1 - amt) * start + amt * end
 }
@@ -49,7 +53,7 @@ export function minMax(value,min,max){
 }
 
 export function transform(el, x = 0, y = 0, r = 0) {
-  
+
   let transform = ""
   if (x || y) transform = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1) `;
   if (r) transform += `rotate3d(0,0,1,${r}deg)`
@@ -106,10 +110,6 @@ export function getTransform(el) {
     }
 
     return transform
-}
-
-export function round(value,place){
-  return parseFloat(value.toFixed(place))
 }
 
 export function getRotation(angle,height,width){

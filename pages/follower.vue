@@ -1,14 +1,8 @@
 <template lang="html">
-  <div id="follower" class="container" v-page v-section>
-    <div
-      class="circle-container"
-      v-element="{onMouseOver}"
-      ref="container"
-      >
+  <div id="follower" class="container" ref="page">
+    <div class="circle-container" ref="container">
       <div class="circle" ref="circle">
-        <nuxt-link to="/">
-          click me
-        </nuxt-link>
+        <nuxt-link to="/">click me</nuxt-link>
       </div>
     </div>
   </div>
@@ -27,6 +21,9 @@ export default {
     };
   },
   mounted() {
+    this.$vb.init(this.$refs.page, false)
+    this.$vb.addElement(this.$refs.container,{onMouseOver: this.onMouseOver})
+
     window.addEventListener('resize',this.getCircle)
     this.getCircle()
   },
@@ -56,8 +53,8 @@ export default {
 
       if (this.ticking){
         window.requestAnimationFrame(()=>{
-          this.button.x = this.$virtualbuddy.lerp(this.button.x, this.mouse.x,this.lerpAmount)
-          this.button.y = this.$virtualbuddy.lerp(this.button.y, this.mouse.y,this.lerpAmount)
+          this.button.x = this.$vb.lerp(this.button.x, this.mouse.x,this.lerpAmount)
+          this.button.y = this.$vb.lerp(this.button.y, this.mouse.y,this.lerpAmount)
           this.transform()
           this.handleAnimation()
         })
@@ -65,12 +62,12 @@ export default {
     },
     transform(){
       if (!this.$refs.circle) return
-      this.$refs.circle.style.transform = `translate(${this.button.x}px,${this.button.y}px)`;
+      this.$vb.transform(this.$refs.circle,this.button.x,this.button.y)
     },
     getCircle(){
       let circleRect = this.$refs.circle.getBoundingClientRect();
       let containerRect = this.$refs.container.getBoundingClientRect();
-      let transform = this.$virtualbuddy.getTransform(this.$refs.circle)
+      let transform = this.$vb.getTransform(this.$refs.circle)
 
       this.circle = {
         height: circleRect.height,

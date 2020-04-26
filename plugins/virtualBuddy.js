@@ -1,46 +1,27 @@
 import VirtualBuddy from "@/assets/virtualBuddy";
+import {lerp, transform, minMax, getTransform, getRotation} from '@/assets/virtualBuddy/helpers'
 import Vue from "vue";
 
-let vb = new VirtualBuddy({
-  scrollbar:{
-    color: 'blue'
-  }
-});
+let instance = {}
 
-Vue.directive("window", {
-  bind: function(el, binding) {
-    vb.addWindow(el);
-  }
-});
-
-Vue.directive("container", {
-  inserted: function(el, binding) {
-    vb.addContainer(el)
-  }
-});
-
-Vue.directive("page", {
-  inserted: function(el, binding) {
-    vb.addPage(el)
-  }
-});
-
-Vue.directive("section", {
-  bind: function(el, binding, test) {
-    vb.addSection(el, binding.value);
+let vb = {
+  init(el){
+    instance = new VirtualBuddy(el)
   },
-  unbind: function(el){
-    vb.removeSection(el)
-  }
-});
-
-Vue.directive("element", {
-  bind: function(el, binding) {
-    vb.addElement(el, binding.value);
+  addPage(el){
+    instance.addPage(el)
   },
-  unbind: function(el){
-    vb.removeElement(el)
-  }
-});
+  addSection(el,o){
+    return instance.addSection(el,o)
+  },
+  addElement(el,o){
+    return instance.addElement(el,o)
+  },
+  getRotation: getRotation,
+  getTransform: getTransform,
+  transform: transform,
+  minMax: minMax,
+  lerp: lerp
+}
 
-Object.defineProperty(Vue.prototype, "$virtualbuddy", {value: vb});
+Object.defineProperty(Vue.prototype, "$vb", {value: vb});

@@ -1,14 +1,14 @@
 <template lang="html">
-  <div id="percent" v-page>
-    <div class="content" v-section>
-      <div class="box" :class="{active: active.box1}" v-element="box1.props">{{percent.box1}}%</div>
-      <div class="box" :class="{active: active.box2}" v-element="box2.props">{{percent.box2}}%</div>
-      <div class="box" :class="{active: active.box3}" v-element="box3.props">{{percent.box3}}%</div>
+  <div id="percent">
+    <div class="container boxes" ref="page">
+        <div class="box" :class="{active: active.box1}" ref="box1">{{percent.box1}}%</div>
+        <div class="box" :class="{active: active.box2}" ref="box2">{{percent.box2}}%</div>
+        <div class="box" :class="{active: active.box3}" ref="box3">{{percent.box3}}%</div>
     </div>
-    <div class="lines" :style="{top: offset, bottom: offset}">
-      <div class="line"><p>{{box1.label}}</p></div>
-      <div class="line"><p>{{box2.label}}</p></div>
-      <div class="line"><p>{{box3.label}}</p></div>
+    <div class="container lines" :style="{top: offset, bottom: offset}">
+      <div class="line"><p>Outside</p></div>
+      <div class="line"><p>Inside</p></div>
+      <div class="line"><p>Transform</p></div>
     </div>
   </div>
 </template>
@@ -18,6 +18,8 @@ import gsap from 'gsap'
 export default {
   data(){
     return{
+      delay: false,
+      rotation: false,
       offset: '25vh',
       percent:{
         box1:0,
@@ -31,44 +33,37 @@ export default {
       }
     }
   },
-  computed:{
-    box1(){
-      return{
-        label: 'Outside',
-        props:{
-          offset: this.offset,
-          onScroll: (e)=> this.percent.box1 = Math.round(e.percent * 100),
-          onEnter:()=> this.active.box1 = true,
-          onLeave:()=> this.active.box1 = false
-        }
-      }
-    },
-    box2(){
-      return{
-        label: 'Inside',
-        props:{
-          inside: true,
-          offset: this.offset,
-          onScroll: (e)=> this.percent.box2 = Math.round(e.percent * 100),
-          onEnter:()=> this.active.box2 = true,
-          onLeave:()=> this.active.box2 = false
-        }
-      }
-    },
-    box3(){
-      return{
-        label: 'Transform',
-        props:{
-          rotate: '360deg',
-          y: -2,
-          mobile: true,
-          offset: this.offset,
-          onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),
-          onEnter:()=> this.active.box3 = true,
-          onLeave:()=> this.active.box3 = false
-        }
-      }
-    },
+  mounted(){
+    this.$vb.init(this.$refs.page)
+
+    this.$vb.addSection(this.$refs.page)
+
+    this.$vb.addElement(this.$refs.box1,{
+      offset: this.offset,
+      onScroll: (e)=> this.percent.box1 = Math.round(e.percent * 100),
+      onEnter:()=> this.active.box1 = true,
+      onLeave:()=> this.active.box1 = false
+    })
+
+    this.$vb.addElement(this.$refs.box2,{
+      inside: true,
+      offset: this.offset,
+      onScroll: (e)=> this.percent.box2 = Math.round(e.percent * 100),
+      onEnter:()=> this.active.box2 = true,
+      onLeave:()=> this.active.box2 = false
+    })
+
+    this.$vb.addElement(this.$refs.box3,{
+      rotate: '270deg',
+      delay: 2,
+      y: -2,
+      mobile: true,
+      offset: this.offset,
+      onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),
+      onEnter:()=> this.active.box3 = true,
+      onLeave:()=> this.active.box3 = false
+    })
+
   }
 }
 </script>
@@ -79,7 +74,7 @@ export default {
   overflow: hidden;
 }
 
-#percent .content{
+#percent .boxes{
   position: relative;
   z-index: 1;
   padding-top: 100vh;
@@ -89,9 +84,7 @@ export default {
 
 #percent .box{
   flex: 0 0 auto;
-  width: 25vw;
   height: 10vw;
-  margin: 3vw;
   background: blue;
   color: white;
   display: flex;
@@ -106,13 +99,11 @@ export default {
 }
 
 #percent .lines{
-  border-top: 1px solid blue;
   position: fixed;
-  left: 0px;
   width: 100vw;
-  border-top: 3px dashed blue;
-  border-bottom: 3px dashed blue;
-  background: rgba(0, 0, 255, 0.1);
+  padding-top: 0px;
+  padding-bottom: 0px;
+  left: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -120,8 +111,8 @@ export default {
 
 
 #percent .line{
-  width: 25vw;
-  margin: 3vw;
+  border: 3px dashed blue;
+  background: rgba(0, 0, 255, 0.1);
   height: 100%;
   background: rgba(0,0,255,.1);
   display: flex;
@@ -133,8 +124,13 @@ export default {
   font-size: 3vw;
   font-weight: 700;
   text-align: center;
-  text-transform: uppercase;
   color: blue;
+}
+
+#percent .box,
+#percent .line{
+  flex: 1 1 33.333%;
+  margin: 0px 1vw;
 }
 
 @media screen and (max-width: 600px){

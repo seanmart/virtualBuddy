@@ -1,16 +1,14 @@
 <template lang="html">
-  <div id="home" class="container" v-page>
-    <div class="section" v-section v-for="(section,a) in sections" :key="a">
+  <div id="home" class="container" ref="page">
+    <div class="section" ref="section" v-for="a in 4" :key="a">
       <div
+        v-for="b in 20"
+        :key="b"
         ref="item"
         class="item"
-        v-for="(item,b) in section"
-        :key="b"
-        v-element="{...item.props, momentum}"
-        :class="item.class"
+        :class="getClass()"
         />
     </div>
-    <button v-if="!mobile" type="button" @click="toggleMomentum">Use {{momentum ? 'Scroll' : 'Momentum'}}</button>
   </div>
 </template>
 
@@ -18,8 +16,20 @@
 import gsap from 'gsap'
 export default {
   mounted(){
-    this.mobile = this.$virtualbuddy.isMobile
+
+    this.$vb.init(this.$refs.page)
+
+    this.$refs.section.forEach(e => this.$vb.addSection(e))
+
+    this.$refs.item.forEach(e => this.$vb.addElement(e,{
+      x: this.rand(-5,5),
+      y: this.rand(-5,5),
+      rotate: `${this.rand(0,100)}deg`,
+      delay: this.rand(0,5)
+    }))
+
     gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .02})
+
   },
   data(){
     return{
@@ -28,44 +38,15 @@ export default {
       count: 40
     }
   },
-  computed:{
-    sections(){
-      let sections = []
-
-      for (let a = 1; a <= 4; a++){
-        let items = []
-        for (let b = 1; b <= this.count; b++){
-          items.push({
-            class: this.getClass(),
-            props: this.getProps(a,b)
-          })
-        }
-        sections.push(items)
-      }
-
-      return sections
-    }
-  },
   methods: {
-    getProps(a,b) {
-      return {
-        x: this.rand(-5,5),
-        y: this.rand(-5,5),
-        rotate: `${this.rand(-50,50)}deg`,
-        mobile: true,
-        log: a == 1 && b == 1
-      };
-    },
     rand(min, max){
-
-      if (min < 0){
-        return Math.floor(min + Math.random() * (Math.abs(min) + max))
-      }
-
+      if (min < 0) return Math.floor(min + Math.random() * (Math.abs(min) + max))
       return Math.floor(Math.random() * max) + min
     },
     getClass(){
-      let int = this.rand(1,80)
+
+      let int = this.rand(0,80)
+
       return{
         circle: int % 5 == 0,
         zigzag: int % 4 == 0,
@@ -73,9 +54,6 @@ export default {
         black: int >= 50 && int <= 60,
         yellow: int >= 30 && int <= 40
       }
-    },
-    toggleMomentum(){
-      this.momentum = this.momentum ? 0 : 10
     }
   }
 };
@@ -87,18 +65,6 @@ export default {
   overflow: hidden;
 }
 
-#home button{
-  position: fixed;
-  bottom: 10%;
-  left: 10%;
-  outline: none;
-  border: 1px solid blue;
-  background: white;
-  color: blue;
-  padding: 10px 20px;
-  font-size: inherit;
-}
-
 #home .section {
   display: flex;
   flex-wrap: wrap;
@@ -106,8 +72,8 @@ export default {
 
 #home .item {
   flex: 0 0 auto;
-  width: 15vw;
-  height: 15vw;
+  width: 19vw;
+  height: 19vw;
   margin: 0.5vw;
   background: blue;
   opacity: 0;

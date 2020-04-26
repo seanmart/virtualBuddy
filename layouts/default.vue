@@ -8,9 +8,7 @@
       </nav>
     </header>
 
-    <div>
       <nuxt />
-    </div>
 
     <footer>
       <p>© seanmware 2020</p>
