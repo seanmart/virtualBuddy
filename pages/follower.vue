@@ -21,7 +21,7 @@ export default {
     };
   },
   mounted() {
-    this.$vb.init(this.$refs.page, false)
+    this.$vb.init(this.$refs.page, true)
     this.$vb.addElement(this.$refs.container,{onMouseOver: this.onMouseOver})
 
     window.addEventListener('resize',this.getCircle)

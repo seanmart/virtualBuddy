@@ -1,4 +1,4 @@
-import {lerp, transform, minMax, getTransform, getRotation, getPosition, getValue} from './helpers'
+import {lerp, transform, minMax, getTransform, getRotation, getPosition, getValue, isMobile} from './helpers'
 
 export default class{
   constructor(el, usePageAsSection = false){
@@ -8,7 +8,7 @@ export default class{
     this.isTicking = false
     this.inertia = this.mobile ? .2 : .075
     this.keepTicking = false
-    this.mobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    this.mobile = isMobile()
 
     this.window = {
       height: null,
@@ -58,9 +58,7 @@ export default class{
 
     this.updateWindow()
 
-    if (el) this.addPage(el)
-    if (usePageAsSection) this.addSection(el)
-
+    if (el) this.addPage(el, usePageAsSection)
 
   }
 
@@ -72,10 +70,11 @@ export default class{
 
 
 
-  addPage(el){
+  addPage(el, isSection){
     this.page.el = el
     el.style.cssText = `position: fixed; top: 0px; left: 0px; right: 0px;`
     this.updatePage()
+    if (isSection) this.addSection(el)
   }
 
   addSection(el,o = {}){
@@ -93,7 +92,10 @@ export default class{
     el.style.willChange = 'transform'
     this.sections.push(s)
 
-    return {el: el, update: (o)=> this.updateSectionOptions(s,o)}
+    return {el: el, update: (o)=> {
+      this.updateSectionOptions(s,o)
+      this.checkScroll(true)
+    }}
   }
 
   addElement(el,o = {}){
@@ -144,7 +146,7 @@ export default class{
   checkScroll(force = false){
     this.isTicking = this.scroll.window !== this.scroll.top
 
-    if (this.isTicking || this.keepTicking || false){
+    if (this.isTicking || this.keepTicking || force){
       window.requestAnimationFrame(()=>{
 
         this.scroll.last = this.scroll.top
@@ -324,11 +326,11 @@ export default class{
   updateElement(e){
     let duration = getValue(e.values.duration,e.el)
     let inside = e.inside ? e.position.height : 0
-    let offsetStart = getValue(e.values.offsetStart,e.el) + inside
-    let offsetEnd = getValue(e.values.offsetEnd,e.el) + inside
+    let offsetBottom= getValue(e.values.offsetBottom,e.el) + inside
+    let offsetTop = getValue(e.values.offsetTop,e.el) + inside
 
-    e.start = Math.max (e.position.top + offsetStart - this.window.height,0)
-    e.end = duration ? e.start + duration : e.position.bottom - offsetStart
+    e.start = Math.max (e.position.top + offsetBottom - this.window.height,0)
+    e.end = duration ? e.start + duration : e.position.bottom - offsetTop
 
     e.x = isNaN(e.values.x) ? getValue(e.values.x,e.el) : (e.values.x / 10) * (e.end - e.start)
     e.y = isNaN(e.values.y) ? getValue(e.values.y,e.el) : (e.values.y / 10) * (e.end - e.start)
@@ -347,8 +349,8 @@ export default class{
     e.values.y = -o.y || e.values.y || 0,
     e.values.r = o.rotate || e.values.r || 0
     e.values.duration = o.duration || e.values.duration || 0,
-    e.values.offsetStart = o.offsetStart || o.offset || e.values.offsetStart || 0,
-    e.values.offsetEnd = o.offsetEnd || o.offset || e.values.offsetEnd || 0
+    e.values.offsetTop = o.offsetTop || o.offset || e.values.offsetTop || 0,
+    e.values.offsetBottom = o.offsetBottom || o.offset || e.values.offsetBottom || 0
 
     e.onScroll = o.onScroll || e.onScroll || null
     e.onEnter = o.onEnter || e.onEnter || null

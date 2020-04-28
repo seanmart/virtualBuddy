@@ -54,8 +54,7 @@ export default {
     })
 
     this.$vb.addElement(this.$refs.box3,{
-      rotate: '270deg',
-      delay: 2,
+      rotate: '45deg',
       y: -2,
       mobile: true,
       offset: this.offset,

@@ -1,12 +1,12 @@
 import VirtualBuddy from "@/assets/virtualBuddy";
-import {lerp, transform, minMax, getTransform, getRotation} from '@/assets/virtualBuddy/helpers'
+import {lerp, transform, minMax, getTransform, getRotation, isMobile} from '@/assets/virtualBuddy/helpers'
 import Vue from "vue";
 
 let instance = {}
 
 let vb = {
-  init(el){
-    instance = new VirtualBuddy(el)
+  init(el, page){
+    instance = new VirtualBuddy(el,page)
   },
   addPage(el){
     instance.addPage(el)
@@ -21,7 +21,8 @@ let vb = {
   getTransform: getTransform,
   transform: transform,
   minMax: minMax,
-  lerp: lerp
+  lerp: lerp,
+  mobile: isMobile
 }
 
 Object.defineProperty(Vue.prototype, "$vb", {value: vb});

@@ -2,6 +2,12 @@
 // HELPERS
 // -----------------------------------------------------------------------------------------------
 
+
+
+export function isMobile(){
+  return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+}
+
 export function lerp(start, end, amt){
     return (1 - amt) * start + amt * end
 }
