@@ -2,11 +2,11 @@ import VirtualBuddy from "@/assets/virtualBuddy";
 import {lerp, transform, minMax, getTransform, getRotation, isMobile} from '@/assets/virtualBuddy/helpers'
 import Vue from "vue";
 
-let instance = {}
+let instance = new VirtualBuddy()
 
 let vb = {
-  init(el, page){
-    instance = new VirtualBuddy(el,page)
+  init(el,s){
+    instance.init(el,s)
   },
   addPage(el){
     instance.addPage(el)

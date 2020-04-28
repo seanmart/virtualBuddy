@@ -1,13 +1,9 @@
 import {lerp, transform, minMax, getTransform, getRotation, getPosition, getValue, isMobile} from './helpers'
 
 export default class{
-  constructor(el, usePageAsSection = false){
+  constructor(){
 
-    this.elements = []
-    this.sections = []
-    this.isTicking = false
     this.inertia = this.mobile ? .2 : .075
-    this.keepTicking = false
     this.mobile = isMobile()
 
     this.window = {
@@ -15,6 +11,37 @@ export default class{
       width: null,
       el: document.documentElement
     }
+
+    this.handleResize = this.handleResize.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleVisibility = this.handleVisibility.bind(this);
+    this.handleScroll = this.handleScroll.bind(this)
+
+    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('mousemove', this.handleMouseMove)
+    window.addEventListener('visibility', this.handleVisibility)
+    window.addEventListener('scroll', this.handleScroll)
+
+    document.body.style.overscrollBehavior = 'none'
+
+    this.init()
+
+  }
+
+
+
+  // -----------------------------------------------------------------------------------------------
+  // INIT
+  // -----------------------------------------------------------------------------------------------
+
+
+
+  init(el, s = false){
+
+    this.elements = []
+    this.sections = []
+    this.isTicking = false
+    this.keepTicking = false
 
     this.page = {
       el: null,
@@ -30,11 +57,6 @@ export default class{
       direction: null
     }
 
-    this.mouse = {
-      x: 0,
-      y: 0
-    }
-
     this.events = {
       mousemove: [],
       mouseup:[],
@@ -42,26 +64,18 @@ export default class{
       resize:[]
     }
 
-    this.handleResize = this.handleResize.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.handleVisibility = this.handleVisibility.bind(this);
-    this.handleScroll = this.handleScroll.bind(this)
+    this.mouse = {
+      x: 0,
+      y: 0
+    }
 
-    window.addEventListener('resize', this.handleResize)
-    window.addEventListener('mousemove', this.handleMouseMove)
-    window.addEventListener('visibility', this.handleVisibility)
-    window.addEventListener('scroll', this.handleScroll)
-
-    document.body.style.overscrollBehavior = 'none'
+    if (el) this.addPage(el)
+    if (s) this.addSection(el)
 
     window.scrollTo(0,0)
-
     this.updateWindow()
 
-    if (el) this.addPage(el, usePageAsSection)
-
   }
-
 
 
   // -----------------------------------------------------------------------------------------------

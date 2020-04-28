@@ -25,7 +25,7 @@ export default {
       x: this.rand(-5,5),
       y: this.rand(-5,5),
       rotate: `${this.rand(0,100)}deg`,
-      delay: this.rand(0,5)
+      delay: this.rand(0,10)
     }))
 
     gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .02})
