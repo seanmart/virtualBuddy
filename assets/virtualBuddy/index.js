@@ -16,10 +16,10 @@ export default class{
     })
 
     let test = testBrowser()
-    console.log(test)
 
     this.instance = this.mobile ? new Main(this.mobile) : new Smooth()
     this.instance.init()
+    window.vb = this.instance
 
   }
 
