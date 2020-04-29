@@ -157,3 +157,13 @@ export function getRotation(angle,height,width){
     }
 
 }
+
+export function testBrowser(){
+  let start = Date.now()
+  let end = start
+
+  for (let i = 1; i < 10000; i++){
+    end = Date.now()
+  }
+  return end - start
+}

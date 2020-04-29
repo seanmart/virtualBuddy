@@ -27,6 +27,9 @@ export default {
     window.addEventListener('resize',this.getCircle)
     this.getCircle()
   },
+  destroyed(){
+    window.removeEventListener('resize',this.getCircle)
+  },
   methods: {
     onMouseOver({entering, leaving, active, x, y}) {
 

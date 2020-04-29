@@ -24,8 +24,8 @@ export default {
     this.$refs.item.forEach(e => this.$vb.addElement(e,{
       x: this.rand(-5,5),
       y: this.rand(-5,5),
-      rotate: `${this.rand(0,100)}deg`,
-      delay: this.rand(0,4)
+      rotate: `${this.rand(-100,100)}deg`,
+      delay: this.rand(0,5)
     }))
 
     gsap.fromTo(this.$refs.item,.5,{scale: 0,rotate: -20},{opacity: 1, scale: 1, rotate: 0,stagger: this.mobile ? 0 : .02})
@@ -139,8 +139,8 @@ export default {
 }
 
 @media screen and (max-width: 600px){
-  #home button{
-    bottom: 50px;
+  #home{
+    padding-top: 116.5vw
   }
 
   #home .item{

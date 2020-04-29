@@ -34,9 +34,7 @@ export default {
     }
   },
   mounted(){
-    this.$vb.init(this.$refs.page)
-
-    this.$vb.addSection(this.$refs.page)
+    this.$vb.init(this.$refs.page, true)
 
     this.$vb.addElement(this.$refs.box1,{
       offset: this.offset,
@@ -82,7 +80,6 @@ export default {
 }
 
 #percent .box{
-  flex: 0 0 auto;
   height: 10vw;
   background: blue;
   color: white;
@@ -128,7 +125,8 @@ export default {
 
 #percent .box,
 #percent .line{
-  flex: 1 1 33.333%;
+  flex: 0 0 auto;
+  width: 33.333%;
   margin: 0px 1vw;
 }
 
