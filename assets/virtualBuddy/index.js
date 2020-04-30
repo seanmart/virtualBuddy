@@ -19,7 +19,8 @@ export default class{
 
     this.instance = this.mobile ? new Main(this.mobile) : new Smooth()
     this.instance.init()
-    window.vb = this.instance
+
+    console.log(this.instance)
 
   }
 

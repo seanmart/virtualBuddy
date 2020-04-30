@@ -130,10 +130,12 @@ export default class {
 
       let e = {
         el: el,
+        target: null,
         position: getPosition(el),
         values:{},
         visible: false,
         hover: false,
+        sticky: false,
         continue: false,
         inside: false,
         mobile: false,
@@ -146,10 +148,13 @@ export default class {
         duration: 0,
         offsetTop:0,
         offsetBottom:0,
+        initial: getTransform(el),
         x:0,
         y:0,
         r:0
       }
+
+      console.log(e)
 
       this.updateOptions(e,o)
       this.updateElement(e)
@@ -233,12 +238,13 @@ export default class {
   }
 
   checkElement(e){
+
       let props = {}
       props.visible = e.start <= this.scroll.top && e.end >= this.scroll.top
 
       if (props.visible || e.visible || e.continue ){
 
-        props.scrolled = this.scroll.top - e.start
+        props.scrolled = minMax(this.scroll.top - e.start, 0, e.distance)
         props.percent = minMax(props.scrolled / (e.distance),0,1)
         props.continue = false
 
@@ -254,10 +260,14 @@ export default class {
 
   checkTransform(e, props){
 
-    let t = {x:0,y:0,r:0}
-    if (e.x) t.x = e.x * props.percent
-    if (e.y) t.y = e.y * props.percent
-    if (e.r) t.r = e.r * props.percent
+    let t = {...e.initial}
+
+    if (props.percent > 0){
+      if (e.x) t.x += e.x * props.percent
+      if (e.y) t.y += e.y * props.percent
+      if (e.r) t.r += e.r * props.percent
+      if (e.sticky) t.y += props.scrolled
+    }
 
     transform(e.el, t.x, t.y, t.r)
 
@@ -335,19 +345,19 @@ export default class {
       switch(key){
 
         case 'rotate':
-        e.values.r = o.rotate
-        break
+          e.values.r = o.rotate
+          break
 
         case 'y':
         case 'x':
         case 'delay':
-        e.values[key] = o[key]
-        break
+          e.values[key] = o[key]
+          break
 
         case 'offset':
-        e.offsetTop = o.offset
-        e.offsetBottom = o.offset
-        break
+          e.offsetTop = o.offset
+          e.offsetBottom = o.offset
+          break
 
         case 'offsetBottom':
         case 'offsetTop':
@@ -357,13 +367,19 @@ export default class {
         case 'onScroll':
         case 'onEnter':
         case 'onLeave':
-        e[key] = o[key]
-        break
+        case 'sticky':
+          e[key] = o[key]
+          break
+
+        case 'target':
+          e.target = o.target
+          e.position = getPosition(e.target)
+          break
 
         case 'onMouseOver':
-        if (!e.onMouseOver && o.onMouseOver) this.addEvent('mousemove',e.el,()=> this.handleMouseOver(e))
-        if (e.onMouseOver && !o.onMouseOver) this.removeEvent('mousemove',e.el,()=> this.handleMouseOver(e))
-        e.onMouseOver = o.onMouseOver
+          if (!e.onMouseOver && o.onMouseOver) this.addEvent('mousemove',e.el,()=> this.handleMouseOver(e))
+          if (e.onMouseOver && !o.onMouseOver) this.removeEvent('mousemove',e.el,()=> this.handleMouseOver(e))
+          e.onMouseOver = o.onMouseOver
       }
     })
   }

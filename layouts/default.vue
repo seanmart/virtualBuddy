@@ -5,6 +5,7 @@
       <nav>
         <nuxt-link to="follower">follower</nuxt-link>
         <nuxt-link to="percent">percent</nuxt-link>
+        <nuxt-link to="sticky">sticky</nuxt-link>
       </nav>
     </header>
 
