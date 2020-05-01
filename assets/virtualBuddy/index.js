@@ -15,10 +15,9 @@ export default class{
       mobile: isMobile()
     })
 
-    this.instance = this.mobile ? new Main(this.mobile) : new Smooth()
+    this.instance = this.mobile ? new Main() : new Smooth()
+    //this.instance = new Main()
     this.instance.init()
-
-    console.log(this.instance)
   }
 
   init(el, s){

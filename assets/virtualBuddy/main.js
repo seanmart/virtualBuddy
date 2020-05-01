@@ -309,8 +309,8 @@ export default class {
   }
 
   updateWindow(){
-    this.window.height = window.innerHeight
-    this.window.width = window.innerWidth
+    this.window.height = window.screen.height
+    this.window.width = window.screen.width
   }
 
   updateSection(s){
