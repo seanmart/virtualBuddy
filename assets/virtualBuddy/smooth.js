@@ -6,6 +6,7 @@ export default class extends Main{
     super()
 
     this.inertia = .075
+    this.delayTicking = false
     document.body.style.overscrollBehavior = 'none'
   }
 
@@ -43,47 +44,27 @@ export default class extends Main{
   // -----------------------------------------------------------------------------------------------
 
 
-
-  checkScroll(force = false){
+  checkScroll(){
 
     let scrollY = window.scrollY
-    this.isTicking = (Math.abs(scrollY - this.scroll.top) > .2)
+    this.isTicking = Math.abs(scrollY - this.scroll.top) > .2
 
-    if (this.isTicking || force){
+    window.requestAnimationFrame(()=>{
+      super.checkScroll(lerp(this.scroll.top, scrollY, this.inertia))
+      this.isTicking && this.checkScroll()
+      !this.isTicking && !this.delayTicking && this.checkDelay(this.elements)
+    })
+  }
 
-      window.requestAnimationFrame(()=>{
-        this.scroll.last = this.scroll.top
-        this.scroll.top = lerp(this.scroll.top, scrollY, this.inertia)
-        this.scroll.bottom = this.scroll.top + this.window.height
-        this.scroll.direction = this.scroll.last > this.scroll.top ? 'up' : 'down'
-        this.mouse.y += this.scroll.top - this.scroll.last
+  checkDelay(els){
+    els = els.filter((e)=> e.continue)
+    this.delayTicking = els.length > 0 && !this.isTicking
 
-        this.sections.forEach(s => this.checkSection(s))
-        this.elements.forEach(e => this.checkElement(e))
+    window.requestAnimationFrame(()=>{
+      els.forEach(e => this.checkElement(e))
+      if (this.delayTicking) this.checkDelay(els)
+    })
 
-        !force && this.checkScroll()
-      })
-
-
-    } else {
-
-
-      let els = this.elements.filter((e)=> e.continue)
-      if (els.length > 0){
-
-        let loop = ()=>{
-          window.requestAnimationFrame(()=>{
-            els.forEach(e => this.checkElement(e))
-            els = els.filter((e)=> e.continue)
-            if (els.length > 0 && !this.isTicking ) loop()
-          })
-        }
-
-        loop()
-
-
-      }
-    }
   }
 
   checkSection(s){
@@ -164,6 +145,14 @@ export default class extends Main{
   updatePage(){
     this.page.limit = this.page.el.offsetHeight
     this.window.el.style.height = `${this.page.limit}px`
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // HANDLE
+  // -----------------------------------------------------------------------------------------------
+
+  handleScroll(){
+    if (!this.isTicking) this.checkScroll()
   }
 
 }

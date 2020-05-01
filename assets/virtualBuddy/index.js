@@ -18,7 +18,6 @@ export default class{
     this.instance = this.mobile ? new Main() : new Smooth()
     this.instance.init()
 
-    console.log(this.instance)
   }
 
   init(el, s){

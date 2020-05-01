@@ -80,7 +80,6 @@ export default class {
       this.events.mousemove = []
 
       this.isTicking = false
-      this.keepTicking = false
 
       if (el) this.addPage(el,s)
 
@@ -196,30 +195,29 @@ export default class {
 
 
 
-  checkScroll(){
-
-    this.isTicking = true
-
-    window.requestAnimationFrame(()=>{
+  checkScroll(scroll){
 
       this.scroll.last = this.scroll.top
-      this.scroll.top = window.scrollY
+      this.scroll.top = scroll
       this.scroll.bottom = this.scroll.top + this.window.height
       this.scroll.diff = Math.round(this.scroll.top - this.scroll.last)
       this.scroll.direction = this.scroll.last > this.scroll.top ? 'up' : 'down'
       this.mouse.y += this.scroll.top - this.scroll.last
-      this.keepTicking = false
 
       this.sections.forEach(s => this.checkSection(s))
       this.elements.forEach(e => this.checkElement(e))
+      this.events.scroll.forEach(e => e.fn())
 
-      if (this.keepTicking) {
-        this.checkScroll()
-      } else {
-        this.isTicking = false
-      }
+  }
 
-    })
+  checkDelay(els){
+    els = els.filter((e)=> e.continue)
+    if (els.length > 0){
+      window.requestAnimationFrame(()=>{
+        els.forEach(e => this.checkElement(e))
+        if (!this.isTicking) this.checkDelay(els)
+      })
+    }
   }
 
   checkSection(s){
@@ -400,13 +398,18 @@ export default class {
 
 
   handleScroll(){
-    if (!this.isTicking) this.checkScroll()
-    this.events.scroll.forEach(e => e.fn())
+    if (!this.isTicking){
+      this.isTicking = true
+      window.requestAnimationFrame(()=>{
+        this.checkScroll(window.scrollY)
+        this.isTicking = false
+      })
+    }
   }
 
   handleResize(){
     this.update()
-    this.checkScroll(true)
+    this.checkScroll()
     this.events.resize.forEach(i => i.fn())
   }
 
