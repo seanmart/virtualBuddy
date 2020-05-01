@@ -53,7 +53,7 @@ export default {
 }
 
 #sticky section{
-  height: 700px;
+  height: 600px;
   background: red;
   position: relative;
   z-index: 1

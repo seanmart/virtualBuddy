@@ -1,4 +1,4 @@
-import {minMax, getTransform, getRotation, getPosition, getValue,transform} from './helpers'
+import {minMax, getTransform, getRotation, getPosition, getValue, getOffset, transform} from './helpers'
 
 export default class {
   constructor(){
@@ -151,10 +151,9 @@ export default class {
         initial: getTransform(el),
         x:0,
         y:0,
-        r:0
+        r:0,
+        s:1
       }
-
-      console.log(e)
 
       this.updateOptions(e,o)
       this.updateElement(e)
@@ -260,16 +259,17 @@ export default class {
 
   checkTransform(e, props){
 
-    let t = {...e.initial}
+    let t = {...e.initial, s: 1}
 
     if (props.percent > 0){
       if (e.x) t.x += e.x * props.percent
       if (e.y) t.y += e.y * props.percent
       if (e.r) t.r += e.r * props.percent
+      if (e.s) t.s += (e.s - 1) * props.percent
       if (e.sticky) t.y += props.scrolled
     }
 
-    transform(e.el, t.x, t.y, t.r)
+    transform(e.el, t.x, t.y, t.r, t.s)
 
   }
 
@@ -322,21 +322,24 @@ export default class {
   updateElement(e){
     let duration = getValue(e.duration,e.el)
     let inside = e.inside ? e.position.height : 0
-    let offsetBottom= getValue(e.offsetBottom,e.el) + inside
+    let offsetBottom = getValue(e.offsetBottom,e.el) + inside
     let offsetTop = getValue(e.offsetTop,e.el) + inside
 
     e.start = Math.max (e.position.top + offsetBottom - this.window.height,0)
     e.end = duration ? e.start + duration : e.position.bottom - offsetTop
 
     if (e.values.delay) e.delay = .15 / Math.abs(e.values.delay)
-    if (e.values.x) e.x = isNaN(e.values.x) ? getValue(e.values.x,e.el) : (e.values.x / 10) * (e.end - e.start)
+
+    if (e.values.x) e.x = isNaN(e.values.x) ? getValue(e.values.x,e.el) : (-e.values.x / 10) * (e.end - e.start)
+    if (e.values.y) e.y = isNaN(e.values.y) ? getValue(e.values.y,e.el) : (-e.values.y / 10) * (e.end - e.start)
     if (e.values.r) e.r = isNaN(e.values.r) ? getValue(e.values.r,e.el) : (e.values.r / 100) * (e.end - e.start)
-    if (e.values.y) e.y = isNaN(e.values.y) ? getValue(e.values.y,e.el) : (e.values.y / 10) * (e.end - e.start)
+    if (e.values.s && !isNaN(e.values.s)) e.s = e.values.s
 
-    if (e.r) e.end += getRotation(e.r, e.position.height, e.position.width).bottom
-    if (e.y) e.end += e.y
+    let offset = getOffset(e.x, e.y, e.r, e.s, e.position.height, e.position.width)
 
+    e.end  += offset.y + offset.ry - offset.sy
     e.distance = e.end - e.start
+
   }
 
   updateOptions(e,o){
@@ -346,6 +349,10 @@ export default class {
 
         case 'rotate':
           e.values.r = o.rotate
+          break
+
+        case 'scale':
+          e.values.s = o.scale
           break
 
         case 'y':

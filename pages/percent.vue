@@ -15,6 +15,7 @@
 
 <script>
 import gsap from 'gsap'
+import {getBounds} from '@/assets/virtualBuddy/helpers'
 export default {
   data(){
     return{
@@ -34,9 +35,11 @@ export default {
     }
   },
   mounted(){
+
     this.$vb.init(this.$refs.page, true)
 
     this.$vb.addElement(this.$refs.box1,{
+      mobile: true,
       offset: this.offset,
       onScroll: (e)=> this.percent.box1 = Math.round(e.percent * 100),
       onEnter:()=> this.active.box1 = true,
@@ -45,6 +48,7 @@ export default {
 
     this.$vb.addElement(this.$refs.box2,{
       inside: true,
+      mobile: true,
       offset: this.offset,
       onScroll: (e)=> this.percent.box2 = Math.round(e.percent * 100),
       onEnter:()=> this.active.box2 = true,
@@ -52,8 +56,8 @@ export default {
     })
 
     this.$vb.addElement(this.$refs.box3,{
-      rotate: '45deg',
-      y: -2,
+      rotate: '160deg',
+      scale: .4,
       mobile: true,
       offset: this.offset,
       onScroll: (e)=> this.percent.box3 = Math.round(e.percent * 100),
@@ -74,7 +78,7 @@ export default {
 #percent .boxes{
   position: relative;
   z-index: 1;
-  padding-top: 100vh;
+  padding-top: 800px;
   display: flex;
   justify-content: center;
 }

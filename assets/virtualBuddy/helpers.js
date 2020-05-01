@@ -58,29 +58,68 @@ export function minMax(value,min,max){
   return Math.max(Math.min(value,max),min)
 }
 
-export function transform(el, x = null, y = null, r = null) {
+export function transform(el, x = 0, y = 0, r = 0, s = 1) {
 
-  let transform = ""
-  if (x !== null || y !== null) transform = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x || 0},${y || 0},0,1) `;
-  if (r !== null) transform += `rotate3d(0,0,1,${r}deg)`
+  let rad = r * (Math.PI / 180)
+  let dx = Math.cos(rad) * s
+  let dy = Math.sin(rad) * s
+  let transform = `matrix(${dx},${dy},${-dy},${dx},${x},${y})`
 
   el.style.webkitTransform = transform;
   el.style.msTransform = transform;
   el.style.transform = transform;
 }
 
+export function getTransform(el) {
+
+    let transform = {x:0,y:0,r: 0,s: 1}
+
+    if(window.getComputedStyle){
+
+      let style = getComputedStyle(el,null);
+
+      let ts = style.getPropertyValue("-webkit-transform") ||
+               style.getPropertyValue("-moz-transform") ||
+               style.getPropertyValue("-ms-transform") ||
+               style.getPropertyValue("-o-transform") ||
+               style.getPropertyValue("transform")
+
+      let mat = ts.match(/^matrix\((.+)\)$/)
+
+      if (mat){
+
+        let m = mat[1].split(',').map(v => parseFloat(v))
+
+        let angle = Math.atan2(m[1], m[0])
+        let denom = Math.pow(m[0], 2) + Math.pow(m[1], 2)
+        let scaleX = Math.sqrt(denom)
+        let scaleY = (m[0] * m[3] - m[2] * m[1]) / scaleX
+        let skewX = Math.atan2(m[0] * m[2] + m[1] * m[3], denom)
+
+        transform.x = m[4]
+        transform.y = m[5]
+        transform.r = angle / (Math.PI / 180)
+        transform.s = scaleY
+    }
+  }
+    return transform
+}
+
+
 export function getPosition(el){
 
-  let bounds = el.getBoundingClientRect()
-  let transform = getTransform(el)
-  let rotate = getRotation(transform.r,el.offsetHeight,el.offsetWidth)
+  let w = el.offsetWidth
+  let h = el.offsetHeight
 
+  let bounds = el.getBoundingClientRect()
+  let t = getTransform(el)
+  let offset = getOffset(t.x, t.y, t.r, t.s, h, w)
   let position = {}
 
-  position.height = el.offsetHeight
-  position.width = el.offsetWidth
-  position.top = bounds.top - transform.y - rotate.top
-  position.left = bounds.left - transform.x - rotate.left
+  position.height = h
+  position.width = w
+  position.top = bounds.top - offset.y + offset.ry - offset.sy
+  position.left = bounds.left - offset.x + offset.rx - offset.sy
   position.bottom = position.top + position.height
   position.right = position.left + position.width
 
@@ -88,34 +127,22 @@ export function getPosition(el){
 
 }
 
-export function getTransform(el) {
+export function getOffset(x = 0,y = 0,r = 0,s = 1,h = 0,w = 0){
 
-    let transform = {x:0,y:0,r: 0}
+  let sh = h * s
+  let sw = w * s
+  let sx = (w - sw) / 2
+  let sy = (h - sh) / 2
 
-    if(window.getComputedStyle){
+  //let a = (r * Math.PI) / 180;
+  //let rx = ((Math.sin(a) * sh + Math.cos(a) * sw) - sw) / 2
+  //let ry = ((Math.sin(a) * sw + Math.cos(a) * sh) - sh) / 2
+  let rotation = getRotation(r,sh,sw)
+  let rx = rotation.right
+  let ry = rotation.bottom 
 
-      let style = getComputedStyle(el,null);
+  return {x,y,rx,ry,sx,sy}
 
-      let ts = style.getPropertyValue("-webkit-transform") ||
-                      style.getPropertyValue("-moz-transform") ||
-                      style.getPropertyValue("-ms-transform") ||
-                      style.getPropertyValue("-o-transform") ||
-                      style.getPropertyValue("transform")
-
-      let mat = ts.match(/^matrix\((.+)\)$/)
-
-      if (mat){
-
-        let values = mat[1].split(',').map(v => parseFloat(v))
-
-        transform.x = parseFloat(values[4])
-        transform.y = parseFloat(values[5])
-        transform.r = Math.round(Math.atan2(values[1], values[0]) * (180/Math.PI));
-
-      }
-    }
-
-    return transform
 }
 
 export function getRotation(angle,height,width){
@@ -156,14 +183,4 @@ export function getRotation(angle,height,width){
       bottom: Math.max(r[0][1], r[1][1], r[2][1], r[3][1]) - h
     }
 
-}
-
-export function testBrowser(){
-  let start = Date.now()
-  let end = start
-
-  for (let i = 1; i < 10000; i++){
-    end = Date.now()
-  }
-  return end - start
 }

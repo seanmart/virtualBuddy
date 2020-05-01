@@ -146,7 +146,9 @@ export default class extends Main{
         let e = this.elements.find(e => e.el == el)
 
         if (e){
+
           e.position = getPosition(e.el)
+
           e.position.top -= sectionTransform.y
           e.position.bottom -= sectionTransform.y
           e.position.left -= sectionTransform.x

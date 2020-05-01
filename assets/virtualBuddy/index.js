@@ -1,13 +1,13 @@
 import Main from './main'
 import Smooth from './smooth'
 
-import {lerp, transform, minMax, getTransform, getRotation, isMobile, testBrowser} from './helpers'
+import {lerp, transform, minMax, getTransform, getOffset, isMobile} from './helpers'
 
 export default class{
   constructor(){
 
     Object.assign(this,{},{
-      getRotation: getRotation,
+      getOffset: getOffset,
       getTransform: getTransform,
       transform: transform,
       minMax: minMax,
@@ -15,13 +15,10 @@ export default class{
       mobile: isMobile()
     })
 
-    let test = testBrowser()
-
     this.instance = this.mobile ? new Main(this.mobile) : new Smooth()
     this.instance.init()
 
     console.log(this.instance)
-
   }
 
   init(el, s){

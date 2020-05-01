@@ -85,7 +85,8 @@ export default {
 
 <style lang="css">
 #follower{
-  height: 200vh
+  height: 300vh;
+  padding-top: 50vh;
 }
 
 #follower .circle-container {

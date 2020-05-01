@@ -25,6 +25,7 @@ export default {
       x: this.rand(-5,5),
       y: this.rand(-5,5),
       rotate: `${this.rand(-100,100)}deg`,
+      scale: this.rand(.2,1.5, false),
       delay: this.rand(0,5)
     }))
 
@@ -39,9 +40,12 @@ export default {
     }
   },
   methods: {
-    rand(min, max){
-      if (min < 0) return Math.floor(min + Math.random() * (Math.abs(min) + max))
-      return Math.floor(Math.random() * max) + min
+    rand(min, max,int = true){
+      let rnd = min < 0
+                ? min + Math.random() * (Math.abs(min) + max)
+                : Math.random() * max + min
+
+      return int ? Math.floor(rnd) : parseFloat(rnd.toFixed(2))
     },
     getClass(){
 
