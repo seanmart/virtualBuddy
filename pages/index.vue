@@ -2,7 +2,7 @@
   <div id="home" class="container" ref="page">
     <div class="section" ref="section" v-for="a in 4" :key="a">
       <div
-        v-for="b in 20"
+        v-for="b in 50"
         :key="b"
         ref="item"
         class="item"

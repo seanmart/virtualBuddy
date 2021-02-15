@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="page">
     <header>
       <nuxt-link to="/" class="logo">Virtual Buddy</nuxt-link>
       <nav>
@@ -10,6 +10,8 @@
     </header>
 
       <nuxt />
+
+      <div class="background" />
 
     <footer>
       <p>© seanmware 2020</p>
@@ -44,6 +46,16 @@ html {
   padding: 150px 10vw;
 }
 
+.background{
+  background: white;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 100vh;
+  width: 100vw;
+  z-index: -1;
+}
+
 a{
   text-decoration: none;
   display: inline-block;
@@ -53,7 +65,7 @@ a{
 header,
 footer{
   position: fixed;
-  z-index: 10;
+  z-index: 100;
   left: 0px;
   right: 0px;
   padding: 20px 10vw;
@@ -61,15 +73,19 @@ footer{
 
 header{
   top: 0px;
-  display: flex;
-  flex-direction: row;
+  mix-blend-mode:difference;
+  color: white;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
   align-items: center;
 }
 
 header .logo{
+  font-size: 50px;
+  font-weight: bold;
   flex: 0 0 auto;
-  font-size: 35px;
-  font-weight: 700;
 }
 
 footer{
@@ -86,8 +102,8 @@ nav{
 
 nav a{
   padding: 10px 20px;
-  border: 1px solid blue;
-  color: blue;
+  border: 1px solid white;
+  color: white;
   border-radius: 5px;
   margin-left: 5px;
 }
