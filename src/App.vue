@@ -1,28 +1,53 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+/* eslint-disable */
+
+<template lang="html">
+  <main>
+    <header>
+      <h1>Virtual Buddy</h1>
+    </header>
+    <blocks />
+  </main>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-
+import blocks from '@/components/blocks'
 export default {
-  name: "App",
-  components: {
-    HelloWorld
-  }
+  components:{blocks}
 };
 </script>
-
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+* {
+  margin: 0px;
+  padding: 0px;
+  line-height: 1;
+  box-sizing: border-box;
 }
+
+html{
+  font-family: 'arial'
+}
+
+main{
+  background: white;
+  padding: 150px 10vw 10vw;
+}
+
+header{
+  position: fixed;
+  z-index: 100;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  padding: 50px 10vw;
+  mix-blend-mode:difference;
+  color: white;
+
+  h1{
+    mix-blend-mode:difference;
+    color: white;
+  }
+}
+
+
 </style>
