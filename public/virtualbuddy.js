@@ -1,4 +1,5 @@
 function runVirtualBuddy() {
+  let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
   let scroll = {
       top: 0,
       bottom: 0,
@@ -216,7 +217,7 @@ function runVirtualBuddy() {
 
   function handleResize() {
     updateResize();
-    handleScroll();
+    !isMobile && handleScroll();
   }
 
   function updateResize() {
