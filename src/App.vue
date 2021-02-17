@@ -25,10 +25,10 @@ export default {
 
 html {
   font-family: "arial";
+  background: white;
 }
 
 main {
-  background: white;
   padding: 150px 0px 0px;
 }
 
