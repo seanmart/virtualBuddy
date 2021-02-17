@@ -1,5 +1,9 @@
 function runVirtualBuddy() {
-  let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  let isMobile =
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   let scroll = {
       top: 0,
       bottom: 0,
@@ -27,7 +31,7 @@ function runVirtualBuddy() {
       inertia: 0,
       limit: 0,
       el: null,
-      container: null;
+      container: null
     },
     $scroll = {
       busy: false,
@@ -217,7 +221,7 @@ function runVirtualBuddy() {
   // RESIZE //////////////////////////////////////////
 
   function handleResize() {
-    if (isMobile && !changedOrientation()) return
+    if (isMobile && !changedOrientation()) return;
     updateResize();
     handleScroll();
   }
@@ -259,9 +263,9 @@ function runVirtualBuddy() {
     el.style.msTransform = transform;
     el.style.transform = transform;
   }
-  
-  function changed orientation(){
-    return resize.width !== window.innerWidth
+
+  function changedOrientation() {
+    return resize.width !== window.innerWidth;
   }
 
   function log(content) {
