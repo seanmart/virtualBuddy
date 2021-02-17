@@ -10,13 +10,12 @@
 </template>
 
 <script>
-import blocks from '@/components/blocks'
+import blocks from "@/components/blocks";
 export default {
-  components:{blocks}
+  components: { blocks }
 };
 </script>
 <style lang="less">
-
 * {
   margin: 0px;
   padding: 0px;
@@ -24,30 +23,28 @@ export default {
   box-sizing: border-box;
 }
 
-html{
-  font-family: 'arial'
+html {
+  font-family: "arial";
 }
 
-main{
+main {
   background: white;
-  padding: 150px 10vw 10vw;
+  padding: 150px 0px 0px;
 }
 
-header{
+header {
   position: fixed;
   z-index: 100;
   top: 0px;
   left: 0px;
   right: 0px;
   padding: 50px 10vw;
-  mix-blend-mode:difference;
+  mix-blend-mode: difference;
   color: white;
 
-  h1{
-    mix-blend-mode:difference;
+  h1 {
+    mix-blend-mode: difference;
     color: white;
   }
 }
-
-
 </style>
