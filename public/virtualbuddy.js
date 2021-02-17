@@ -1,9 +1,5 @@
 function runVirtualBuddy() {
-  let isMobile =
-    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    ) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   let scroll = {
       top: 0,
       bottom: 0,
@@ -14,7 +10,7 @@ function runVirtualBuddy() {
     },
     resize = {
       width: window.innerHeight,
-      height: window.innerHeight,
+      height: isMobile ? window.innerHeight + 150 : window.innerHeight,
       create: createResizeItem
     },
     mouse = {
@@ -222,6 +218,7 @@ function runVirtualBuddy() {
 
   function handleResize() {
     if (isMobile && !changedOrientation()) return;
+    $smooth.el.style.background = "green";
     updateResize();
     handleScroll();
   }

@@ -71,6 +71,7 @@ export default {
   }
 
   .block {
+    will-change: transform;
     background: blue;
     border: 1px solid black;
     padding-bottom: 100%;
