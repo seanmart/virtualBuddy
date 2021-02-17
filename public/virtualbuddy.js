@@ -26,7 +26,8 @@ function runVirtualBuddy() {
       height: 0,
       inertia: 0,
       limit: 0,
-      el: null
+      el: null,
+      container: null;
     },
     $scroll = {
       busy: false,
@@ -216,8 +217,9 @@ function runVirtualBuddy() {
   // RESIZE //////////////////////////////////////////
 
   function handleResize() {
+    if (isMobile && !changedOrientation()) return
     updateResize();
-    !isMobile && handleScroll();
+    handleScroll();
   }
 
   function updateResize() {
@@ -256,6 +258,10 @@ function runVirtualBuddy() {
     el.style.webkitTransform = transform;
     el.style.msTransform = transform;
     el.style.transform = transform;
+  }
+  
+  function changed orientation(){
+    return resize.width !== window.innerWidth
   }
 
   function log(content) {
