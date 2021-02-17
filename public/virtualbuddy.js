@@ -218,7 +218,7 @@ function runVirtualBuddy() {
 
   function handleResize() {
     if (isMobile && !changedOrientation()) return;
-    $smooth.el.style.background = "green";
+
     updateResize();
     handleScroll();
   }

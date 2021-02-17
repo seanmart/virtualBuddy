@@ -68,6 +68,7 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 10px;
+    padding: 10px;
   }
 
   .block {
@@ -152,6 +153,9 @@ export default {
   @media screen and (max-width: 700px) {
     .scroll {
       grid-template-columns: 1fr 1fr;
+    }
+    .block h3{
+      font-size: 25px;
     }
   }
 }
