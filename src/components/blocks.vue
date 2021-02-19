@@ -19,15 +19,30 @@ export default {
     });
 
     let blocks = document.querySelectorAll(".block");
+    //let scrollEl = document.querySelector(".scroll");
+    //let mc = new window.Hammer(scrollEl);
+    //mc.on('pan',(e)=>{})
 
     for (let i = 0; i < blocks.length; i++) {
+
       let block = blocks[i];
-      let anim = this.getAnimation(block);
+      let text = block.querySelector("h3")
+
+      let animBlock = this.getAnimation(block);
+      let animText = this.getAnimation(text);
 
       window.virtualbuddy.scroll.create(block, {
         inertia: Math.random() * 10 + 1,
-        onScroll: e => anim.progress(e.progress)
+        onScroll: e => animBlock.progress(e.progress)
       });
+
+      window.virtualbuddy.scroll.create(block, {
+        inertia: Math.random() * 10 + 1,
+        onScroll: e => animText.progress(e.progress)
+      });
+
+
+
     }
   },
   methods: {
@@ -37,14 +52,18 @@ export default {
     },
     getAnimation(el) {
       let rand = Math.random();
-      return window.gsap.to(el, 1, {
+
+      let props = {
+        paused: true,
         ease: "none",
         scale: rand * 1.5,
         rotate: rand > 0.5 ? rand * 200 : rand * -200,
         x: rand > 0.5 ? rand * 500 : rand * -500,
-        y: rand * -200,
-        paused: true
-      });
+        y: rand > 0.5 ? rand * 500 : rand * -100
+      };
+
+      return window.gsap.to(el, 1, props, 0)
+
     },
     getClasses() {
       let rand = Math.random();
@@ -85,16 +104,22 @@ export default {
       top: 50%;
       left: 10%;
       padding: 10px;
+      background: blue;
+      border: 1px solid black;
     }
 
     &.red {
       background: red;
+      h3{background: red;}
     }
     &.black {
       background: black;
+      h3{background: black;}
     }
     &.yellow {
+      background: yellow;
       color: black;
+      h3{background: yellow;}
     }
     &.circle {
       border-radius: 50%;
@@ -154,7 +179,7 @@ export default {
     .scroll {
       grid-template-columns: 1fr 1fr;
     }
-    .block h3{
+    .block h3 {
       font-size: 25px;
     }
   }
