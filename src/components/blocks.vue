@@ -2,7 +2,7 @@
   <section id="blocks">
     <div class="scroll">
       <div v-for="i in 200" :key="i" class="block" :class="getClasses()">
-        <h3>{{ i == 200 ? "end" : randomWord() }}</h3>
+        <h3>{{ randomWord(i) }}</h3>
       </div>
     </div>
   </section>
@@ -11,6 +11,9 @@
 <script>
 import words from "@/assets/words";
 export default {
+  destroyed(){
+    window.virtualbuddy.destroy()
+  },
   mounted() {
     window.virtualbuddy.smooth.create({
       limit: 600,
@@ -46,7 +49,12 @@ export default {
     }
   },
   methods: {
-    randomWord() {
+    randomWord(i) {
+      if (i == 1) return "your"
+      if (i == 2) return "virtual"
+      if (i == 3) return "friend"
+      if (i == 200) return "end"
+
       let x = parseInt(Math.random() * words.length - 1);
       return words[x];
     },
@@ -58,8 +66,8 @@ export default {
         ease: "none",
         scale: rand * 1.5,
         rotate: rand > 0.5 ? rand * 200 : rand * -200,
-        x: rand > 0.5 ? rand * 500 : rand * -500,
-        y: rand > 0.5 ? rand * 500 : rand * -100
+        x: rand > 0.45 ? rand * 500 : rand * -500,
+        y: rand > 0.45 ? rand * 200 : rand * -100
       };
 
       return window.gsap.to(el, 1, props, 0)

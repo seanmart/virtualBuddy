@@ -40,10 +40,41 @@ function runVirtualBuddy() {
       functions: []
     };
 
-  window.virtualbuddy = { scroll, resize, mouse, smooth };
+  window.virtualbuddy = { scroll, resize, mouse, smooth, destroy };
   window.addEventListener("scroll", handleScroll);
   window.addEventListener("resize", handleResize);
   window.addEventListener("mousemove", handleMouse);
+
+
+  function destroy(){
+
+    destroySmooth()
+
+    $scroll = {
+      busy: false,
+      itemsBusy: false,
+      functions: [],
+      items: []
+    }
+    $smooth = {
+      on: false,
+      height: 0,
+      inertia: 0,
+      limit: 0,
+      el: null,
+      container: null
+    }
+    $resize = {
+      items: [],
+      functions: []
+    }
+
+    delete window.virtualbuddy
+    window.removeEventListener("scroll", handleScroll);
+    window.removeEventListener("resize", handleResize);
+    window.removeEventListener("mousemove", handleMouse);
+
+  }
 
   // SMOOTH //////////////////////////////////////////
 
